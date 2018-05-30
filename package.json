@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/vegchic/MyPlanet/issues"
   },
-  "homepage": "https://github.com/vegchic/MyPlanet#readme"
+  "homepage": "https://github.com/vegchic/MyPlanet#readme",
+  "dependencies": {
+    "koa": "^2.5.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-static": "^4.0.3",
+    "koa-views": "^6.1.4"
+  }
 }
