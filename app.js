@@ -8,6 +8,7 @@ const session = require('koa-session');
 const redisStore = require('koa-redis');
 
 const passport = require('./services/passport');
+const handleError = require('./services/handleError');
 const router = require('./routes');
 const { redis: redisConfig } = require('./config');
 
@@ -16,6 +17,7 @@ const app = new Koa();
 app.keys = ['myPlanet'];
 
 app.use(logger());
+app.use(handleError);
 
 app.use(bodyParser());
 app.use(session({

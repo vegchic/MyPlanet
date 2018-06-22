@@ -10,4 +10,6 @@ usrRouter.put('/', user.update);
 
 usrRouter.put('/password', user.changePwd);
 
+usrRouter.post('/avatar', user.uploadAvatar, user.saveName);
+
 module.exports = usrRouter;

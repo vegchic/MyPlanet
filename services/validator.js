@@ -3,11 +3,11 @@ const reg = {
     username: /^[a-zA-Z]\w{5,17}/,
     password: /^(\w){6,20}$/,
     nickname: /.{1,17}/,
+    image: /^image\/.*$/,
 };
 
 function match(val, opt) {
     return Reflect.has(reg, opt) && reg[opt].test(val);
 }
-
 
 module.exports = match;
