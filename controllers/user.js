@@ -1,12 +1,17 @@
 const path = require('path');
 const fs = require('fs');
 
-const { updateUser, checkPassword, fetchOne } = require('../models/user');
+const { updateUser, checkPassword } = require('../models/user');
 const match = require('../services/validator');
 const upload = require('../services/upload');
 
 async function getProfile(ctx) {
-    let user = await fetchOne(ctx.state.user);
+
+}
+
+async function getDetail(ctx) {
+    let { username, email, nickname } = ctx.state.user;
+    ctx.body = { username, email, nickname };
 }
 
 async function update(ctx) {
@@ -15,10 +20,12 @@ async function update(ctx) {
     detail = { email, nickname };
     let err = validateUser(detail);
     if (err) {
-
+        ctx.body = { status: false, err };
     } else {
         let { username } = ctx.state.user;
-        updateUser({ username, ...detail });
+        let data = { username, ...detail };
+        updateUser(data);
+        ctx.body = { status: true, data };
     }
 }
 
@@ -26,8 +33,9 @@ async function changePwd(ctx) {
     let { username, password } = ctx.state.user;
     let { newpassword, oldpassword } = ctx.request.body;
     if (!await checkPassword(password, oldpassword)) {
-
+        ctx.body = { status: false, err: "旧密码错误" };
     } else {
+        ctx.body = { state: true };
        await updateUser({ username, password: newpassword });
     }
 }
@@ -56,9 +64,9 @@ async function uploadAvatar(ctx, next) {
 
 async function saveName(ctx, next) {
     if (!ctx.req.file) {
-        return ;
+        ctx.body = { status: false, err: "上传失败" };
     } else {
-
+        ctx.body = { status: true };
     }
 
     let { username, avatar } = ctx.state.user;
@@ -79,4 +87,5 @@ module.exports = {
     changePwd,
     uploadAvatar,
     saveName,
+    getDetail,
 }

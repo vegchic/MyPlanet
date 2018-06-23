@@ -8,7 +8,9 @@ usrRouter.get('/', user.getProfile);
 
 usrRouter.put('/', user.update);
 
-usrRouter.put('/password', user.changePwd);
+usrRouter.get('/detail', user.getDetail);
+
+usrRouter.post('/password', user.changePwd);
 
 usrRouter.post('/avatar', user.uploadAvatar, user.saveName);
 

@@ -4,13 +4,14 @@ const match = require('../services/validator');
 
 async function login(ctx) {
     if (ctx.isAuthenticated()) {
-        return ;
+        ctx.body = { status: false, err: "已经登录" };
     }
     return passport.authenticate('local', (err, user) => {
         if (err) {
-            
+            ctx.body = { status: false, err };
         } else {
             ctx.login(user);
+            ctx.redirect('/home');
         }
     })(ctx);
 }
@@ -18,6 +19,7 @@ async function login(ctx) {
 async function logout(ctx) {
     if (ctx.isAuthenticated()) {
         ctx.logout();
+        ctx.redirect('/login');
     } else {
         ctx.status(401);
     }
@@ -28,8 +30,9 @@ async function register(ctx) {
     let err = await validateUser(param);
     if (!err) {
         addUser(param);
+        ctx.redirect('/login');
     } else {
-        console.log(err);
+        ctx.body = {status: false, err};
     }
 }
 
