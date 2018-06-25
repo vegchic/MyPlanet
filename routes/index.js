@@ -7,6 +7,7 @@ const starRouter = require('./star');
 const planRouter = require('./planet');
 const comRouter = require('./comet');
 const sateRouter = require('./satellite');
+const searchRouter = require('./search');
 
 const router = new Router( {prefix: '/api'} );
 
@@ -19,6 +20,8 @@ router.all('/*', async (ctx, next) => {
         return next();
     }
 });
+
+router.use(searchRouter.routes());
 
 router.use(usrRouter.routes());
 

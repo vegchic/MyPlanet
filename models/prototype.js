@@ -19,6 +19,10 @@ module.exports = class Model {
         return knex(this.table).where(query).select();
     }
 
+    async search(condition) {
+        return knex(this.table).whereRaw(condition);
+    }
+
     /**
      * 向表中插入数据
      *
