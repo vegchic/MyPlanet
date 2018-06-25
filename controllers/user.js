@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { updateUser, checkPassword } = require('../models/user');
-const match = require('../services/validator');
+const { match } = require('../services/validator');
 const upload = require('../services/upload');
 
 async function getProfile(ctx) {
@@ -81,6 +81,13 @@ async function saveName(ctx, next) {
     }
 }
 
+async function getAvatar(ctx) {
+    let { avatar } = ctx.state.user;
+    let stream = fs.createReadStream(path.join(avatarPath, avatar));
+    ctx.set('Content-type', 'image/*');
+    ctx.body = stream;
+}
+
 module.exports = {
     getProfile,
     update,
@@ -88,4 +95,5 @@ module.exports = {
     uploadAvatar,
     saveName,
     getDetail,
+    getAvatar,
 }

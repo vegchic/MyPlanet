@@ -2,21 +2,34 @@ const Router = require('koa-router');
 
 const authRouter = require('./auth');
 const usrRouter = require('./user');
+const galRouter = require('./galaxy');
+const starRouter = require('./star');
+const planRouter = require('./planet');
+const comRouter = require('./comet');
+const sateRouter = require('./satellite');
 
-const router = new Router();
+const router = new Router( {prefix: '/api'} );
 
 router.use(authRouter.routes());
 
 router.all('/*', async (ctx, next) => {
     if (!ctx.isAuthenticated()) {
-        console.log('未登录');
-        ctx.body = 'hello world';
+        ctx.body = {status: false, err: '未登录'};
     } else {
-        console.log('已登录');
         return next();
     }
 });
 
 router.use(usrRouter.routes());
+
+router.use(galRouter.routes());
+
+router.use(starRouter.routes());
+
+router.use(planRouter.routes());
+
+router.use(comRouter.routes());
+
+router.use(sateRouter.routes());
 
 module.exports = router;

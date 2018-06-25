@@ -1,10 +1,11 @@
 const passport = require('../services/passport');
 const { fetchOne, addUser } = require('../models/user');
-const match = require('../services/validator');
+const { match } = require('../services/validator');
 
 async function login(ctx) {
     if (ctx.isAuthenticated()) {
         ctx.body = { status: false, err: "已经登录" };
+        return;
     }
     return passport.authenticate('local', (err, user) => {
         if (err) {

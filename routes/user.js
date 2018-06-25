@@ -14,4 +14,6 @@ usrRouter.post('/password', user.changePwd);
 
 usrRouter.post('/avatar', user.uploadAvatar, user.saveName);
 
+usrRouter.get('/avatar', user.getAvatar);
+
 module.exports = usrRouter;
