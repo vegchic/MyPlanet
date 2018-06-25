@@ -9,12 +9,13 @@
 </head>
 
 <body>
-  <form method="POST" action="/login">
+  <img src="/api/profile/avatar"/>
+  <form method="POST" action="api/login">
     <input type="text" name="username" />
     <input type="password" name="password" />
     <button>Submit</button>
   </form>
-  <form method="POST" enctype="multipart/form-data" action="/profile/avatar">
+  <form method="POST" enctype="multipart/form-data" action="api/profile/avatar">
     <div>
       <label for="file">Choose file to upload</label>
       <input type="file" id="file" name="file" accept=".png, .jpg, .bmp">

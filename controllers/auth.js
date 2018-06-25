@@ -12,7 +12,7 @@ async function login(ctx) {
             ctx.body = { status: false, err };
         } else {
             ctx.login(user);
-            ctx.redirect('/home');
+            ctx.body = { status: true };
         }
     })(ctx);
 }
@@ -20,7 +20,7 @@ async function login(ctx) {
 async function logout(ctx) {
     if (ctx.isAuthenticated()) {
         ctx.logout();
-        ctx.redirect('/login');
+        ctx.body = { status: true };
     } else {
         ctx.status(401);
     }
