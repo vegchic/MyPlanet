@@ -1,7 +1,6 @@
 const path = require('path');
 const Koa = require('koa');
 const serve = require('koa-static');
-const views = require('koa-views');
 const bodyParser = require('koa-bodyparser');
 const logger = require('koa-logger');
 const session = require('koa-session');
@@ -29,10 +28,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(serve(path.join(__dirname, './public')));
-
-app.use(views(path.join(__dirname, './views'), {
-  extension: 'html',
-}));
 
 app.use(router.routes());
 

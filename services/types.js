@@ -10,20 +10,19 @@ const ERR = {
     DUPLI: '名字重复',
 };
 
-const Father = {
-    galaxy: 'galaxy',
-    comet: 'galaxy',
-    star: 'galaxy',
-    planet: 'star',
-    satellite: 'planet'
+const GALAXY = 'galaxy';
+const STAR = 'star';
+const COMET = 'comet';
+const PLANET = 'planet';
+const SATELLITE = 'satellite';
+
+const FATHER = {
+    galaxy: GALAXY,
+    comet: GALAXY,
+    star: GALAXY,
+    planet: STAR,
+    satellite: PLANET,
 };
 
-const ID = {
-    galaxy: 'gid',
-    comet: 'cid',
-    star: 'sid',
-    planet: 'pid',
-    satellite: 'sid',
-}
 
-module.exports = { ERR, Father, ID };
+module.exports = { ERR, FATHER, TYPE: { GALAXY, STAR, COMET, PLANET, SATELLITE } };

@@ -13,19 +13,21 @@ function match(val, opt) {
 function genValidator(needed, optional) {
     return function validator(data) {
         let res = {};
-        for (const prop of needed) {
-            if (!data[prop])
-                return false;
-            else
-                res[prop] = data[prop];
-        }
-        for (const prop of optional) {
-            if (data[prop]) {
+        Object.keys(data).forEach(prop => {
+            if (needed.includes(prop) && data[prop]) {
                 res[prop] = data[prop];
             }
+        });
+        if (Object.keys(res).length !== needed.length) {
+            return false;
         }
+        optional.forEach(prop => {
+            if (!data[prop]) {
+                Reflect.deleteProperty(data, prop);
+            }
+        });
         return res;
-    }
+    };
 }
 
 module.exports = { match, genValidator };

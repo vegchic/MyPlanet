@@ -50,7 +50,7 @@ const avatarPath = path.join(__dirname, '../public/images/avatars');
 
 async function uploadAvatar(ctx, next) {
     let { avatar } = ctx.state.user;
-    if (avatar == 'default.jpg') {
+    if (avatar === 'default.jpg') {
         avatar = `${Date.now()}`;
     } else {
         avatar = avatar.split('.')[0];
@@ -58,17 +58,17 @@ async function uploadAvatar(ctx, next) {
     await upload(avatarPath, avatar)(ctx, next);
 }
 
-async function saveName(ctx, next) {
+async function saveName(ctx) {
     if (!ctx.req.file) {
-        ctx.body = { status: false, err: "上传失败" };
+        ctx.body = { status: false, err: '上传失败' };
     } else {
         ctx.body = { status: true };
     }
 
     let { username, avatar } = ctx.state.user;
     let { filename } = ctx.req.file;
-    if (avatar != filename) {
-        if (avatar.split('.')[1] != filename.split('.')[1]) {
+    if (avatar !== filename) {
+        if (avatar.split('.')[1] !== filename.split('.')[1]) {
             await Promise.all([fs.promises.unlink(path.join(avatarPath, avatar)), 
                             updateUser({username, avatar: filename})]);
         } else {

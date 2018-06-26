@@ -30,14 +30,14 @@
     "koa-router": "^7.4.0",
     "koa-session": "^5.8.1",
     "koa-static": "^4.0.3",
-    "koa-views": "^6.1.4",
     "mysql": "^2.15.0",
     "nodemon": "^1.17.5",
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-import": "^2.12.0",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.9.1"
   }

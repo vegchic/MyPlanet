@@ -2,12 +2,8 @@ const Router = require('koa-router');
 
 const authRouter = require('./auth');
 const usrRouter = require('./user');
-const galRouter = require('./galaxy');
-const starRouter = require('./star');
-const planRouter = require('./planet');
-const comRouter = require('./comet');
-const sateRouter = require('./satellite');
 const searchRouter = require('./search');
+const category = require('./category');
 
 const router = new Router( {prefix: '/api'} );
 
@@ -25,14 +21,16 @@ router.use(searchRouter.routes());
 
 router.use(usrRouter.routes());
 
-router.use(galRouter.routes());
+router.use(category.routes());
 
-router.use(starRouter.routes());
+// router.use(galRouter.routes());
 
-router.use(planRouter.routes());
+// router.use(starRouter.routes());
 
-router.use(comRouter.routes());
+// router.use(planRouter.routes());
 
-router.use(sateRouter.routes());
+// router.use(comRouter.routes());
+
+// router.use(sateRouter.routes());
 
 module.exports = router;
