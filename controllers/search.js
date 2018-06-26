@@ -23,7 +23,7 @@ function search() {
             } else {
                 let res = await Promise.all(types.map(val => models[val].search(condition)));
                 res.forEach((val, index) => {
-                    val.map(one => one.type = types[index]);
+                    val.map(one => one.category = types[index]);
                     list = [...list, ...val];
                 });
             }
