@@ -85,7 +85,6 @@ async function getAvatar(ctx) {
 }
 
 module.exports = {
-    getProfile,
     update,
     changePwd,
     uploadAvatar,
