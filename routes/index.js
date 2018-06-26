@@ -23,14 +23,4 @@ router.use(usrRouter.routes());
 
 router.use(category.routes());
 
-// router.use(galRouter.routes());
-
-// router.use(starRouter.routes());
-
-// router.use(planRouter.routes());
-
-// router.use(comRouter.routes());
-
-// router.use(sateRouter.routes());
-
 module.exports = router;
