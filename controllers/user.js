@@ -5,10 +5,6 @@ const { updateUser, checkPassword } = require('../models/user');
 const { match } = require('../services/validator');
 const upload = require('../services/upload');
 
-async function getProfile(ctx) {
-
-}
-
 async function getDetail(ctx) {
     let { username, email, nickname } = ctx.state.user;
     ctx.body = { username, email, nickname };

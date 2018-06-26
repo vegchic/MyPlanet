@@ -4,11 +4,9 @@ const user = require('../controllers/user');
 
 const usrRouter = new Router({ prefix: '/profile' });
 
-usrRouter.get('/', user.getProfile);
-
 usrRouter.put('/', user.update);
 
-usrRouter.get('/detail', user.getDetail);
+usrRouter.get('/', user.getDetail);
 
 usrRouter.post('/password', user.changePwd);
 
