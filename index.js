@@ -1,3 +1,1 @@
-const app = require('./app');
-
-app.listen(8080);
+require('esm')(module)('./src/app');
