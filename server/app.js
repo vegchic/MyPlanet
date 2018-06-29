@@ -20,14 +20,14 @@ app.use(handleError);
 
 app.use(bodyParser());
 app.use(session({
-    maxAge: 86400000,
+    maxAge: 60 * 60,
     store: redisStore(redisConfig),
 }, app));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(serve(join(__dirname, './public')));
+app.use(serve(join(__dirname, '../client/dist')));
 
 app.use(router.routes());
 
