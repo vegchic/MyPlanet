@@ -117,11 +117,11 @@ export default class Controller {
                                                 this.model.addRelation(updateData)]) ;
                         }
                     }
+                    ctx.body = { status: true, data: ctx.request.body };
                 } catch (err) {
                     ctx.body = { status: false, err: ERR.UPDATE_FAIL };
                     throw err;
                 }
-                ctx.body = { status: true, data: ctx.request.body };
             }
         } else {
             ctx.body = { status: false, err: ERR.PARAM_LACK };
@@ -135,13 +135,14 @@ export default class Controller {
             let target = await this.model.fetch({ uid, id }, 'id');
             if (!target.length) {
                 ctx.body = { status: false, err: ERR.NOT_EXIST };
+            } else {
+                await this.model.deleteOne({ id });
+                ctx.body = { status: true };
             }
-            await this.model.deleteOne({ id });
         } catch (err) {
             ctx.body = { status: false, err: ERR.DELETE_FAIL };
             throw err;
         }
-        ctx.body = { status: true };
     }
 
 };

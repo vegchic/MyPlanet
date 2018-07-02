@@ -1,298 +1,229 @@
 <template>
+  <div class="container">
   <div>
-   <img :src="imgurl">
-    <div id="info">
-      <table>
-        <tr>
-          <td>名称</td>
-          <td>
-            <input type="text" v-model="info.name">
-          </td>
-          <td>
-            <input type="text" class="Invalid first" :class="{second: ErrorClassActive.name}" value="不可为空" readonly="readonly"/>
-          </td>
-        </tr>
-        <tr>
-          <td>类型</td>
-          <td>
-            <input type="text" v-model="chtype" disabled="true">
-          </td>
-        </tr>
-        <tr v-if="info.type === 'galaxy'">
-          <td>类别</td>
-          <td>
-            <select id="select" v-model="info.catelog">
-            <option disabled value="">请选择</option>
-            <option v-for="item in galaxiescatelog"
-              :key="item.id"
-              :value="item.name"
-              >{{ item.text }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="info.type === 'planet' || info.type === 'comet' || info.type === 'satellite'">
-          <td>周期(年)</td>
-          <td>
-            <input type="text"  v-model="info.cycle">
-          </td>
-          <td>
-            <input type="text" class="Invalid first" :class="{second: ErrorClassActive.cycle}" value="请输入正确的正数" readonly="readonly"/>
-          </td>
-        </tr>
-        <tr v-if="info.type != 'galaxy'">
-          <td>质量(千吨)</td>
-          <td>
-            <input type="text"  v-model="info.mass">
-          </td>
-          <td>
-            <input type="text" class="Invalid first" :class="{second: ErrorClassActive.mass}" value="请输入正确的正数" readonly="readonly"/>
-          </td>
-        </tr>
-        <tr v-if="info.type === 'comet' || info.type === 'planet'">
-          <td>重力(g)</td>
-          <td>
-            <input type="text"  v-model="info.gravity">
-          </td>
-          <td>
-            <input type="text" class="Invalid first" :class="{second: ErrorClassActive.gravity}" value="请输入正确的正数" readonly="readonly"/>
-          </td>
-        </tr>
-        <tr v-if="info.type === 'star' || info.type === 'planet'">
-          <td>年龄(年)</td>
-         <td>
-            <input type="text"  v-model="info.age">
-          </td>
-          <td>
-            <input type="text" class="Invalid first" :class="{second: ErrorClassActive.age}" value="请输入正确的正数" readonly="readonly"/>
-          </td>
-        </tr>
-        <tr v-if="info.type != 'comet'">
-          <td>直径(千米)</td>
-          <td>
-            <input type="text" v-model="info.diameter">
-          </td>
-          <td>
-            <input type="text" class="Invalid first" :class="{second: ErrorClassActive.diameter}" value="请输入正确的正数" readonly="readonly"/>
-          </td>
-        </tr>
-        <tr v-if="info.type != 'galaxy'">
-          <td>特点</td>
-          <td>
-            <input type="text" v-model="info.feature">
-          </td>
-        </tr>
-      </table>
-    </div>
-    <div id="buttonBox">
-      <button @click="deleteinfo">删除</button>
-      <button @click="updateinfo">更新</button>
-    </div>
+    <el-row type="flex" justify="center">
+        <img :src="imgurl" class="img"/>
+      <!-- <el-col :span="6" class="col"> -->
+        <el-form ref="detail" :model="info" :rules="rules" label-width="150px">
+          <el-form-item label="名字" prop="name">
+            <el-input v-model="info.name" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="类型" prop="type">
+            <el-input v-model="chtype" auto-complete="off" readonly="true"></el-input>
+          </el-form-item>
+          <el-form-item label="类别" prop="category" v-if="info.type='galaxy'">
+            <el-input v-model="info.category" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="周期(年)"
+            prop="cycle" v-if="info.type === 'planet' || info.type === 'comet' || info.type === 'satellite'">
+            <el-input v-model="info.cycle" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="质量(千吨)" prop="mass" v-if="info.type !== 'galaxy'">
+            <el-input v-model="info.mass" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="重力(g)" prop="gravity" v-if="info.type === 'planet'">
+            <el-input v-model="info.gravity" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="年龄（亿年）" prop="age" v-if="info.type === 'star' || info.type === 'planet'">
+            <el-input v-model="info.age" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="直径（千公里）">
+            <el-input v-model="info.diameter" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="特点" prop="feature">
+            <el-input v-model="info.feature" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item>
+              <el-button type="primary" @click="updateinfo">更新</el-button>
+              <el-button @click="deleteinfo">删除</el-button>
+          </el-form-item>
+        </el-form>
+      <!-- </el-col> -->
+    </el-row>
+  </div>
     <div id="surroundlist" v-if="seen">
-      <span>{{ describe }} </span>
+      <h2>{{ describe }} </h2>
       <itemList :list="belonglist" :seen="true"></itemList>
     </div>
   </div>
 </template>
 
 <script>
-import itemList from '../components/itemList'
+import itemList from '../components/itemList';
+import onfail from '../util/onfail';
+
+const chinese = {
+  'galaxies': '星系',
+  'comets': '彗星',
+  'stars': '恒星',
+  'planets': '行星',
+  'satellites': '卫星',
+}
 
 export default {
   components: {
     itemList
   },
   name: 'itemDetail',
-  data () {
+  data() {
     return {
-      info: {'name': '', 'type': 'satellite', 'catelog': '', 'age': '', 'diameter': '', 'image': 'logo.png', 'cycle': '', 'gravity': '', 'mass': '', 'feature': '', 'fname': ''},
-      type: [
-        {'id': 1, 'text': '星系', 'name': 'galaxy'},
-        {'id': 2, 'text': '彗星', 'name': 'comet'},
-        {'id': 3, 'text': '恒星', 'name': 'star'},
-        {'id': 4, 'text': '行星', 'name': 'planet'},
-        {'id': 5, 'text': '卫星', 'name': 'satellite'}
-      ],
-      belonglist: [{'id': 17, 'name': 'aa', 'type': 'galaxy', 'diameter': 1.2},
-        {'id': 18, 'name': 'aa', 'type': 'asa', 'diameter': 1.2},
-        {'id': 19, 'name': 'aa', 'type': 'asa', 'diameter': 1.2},
-        {'id': 20, 'name': 'aa', 'type': 'asa', 'diameter': 1.2},
-        {'id': 21, 'name': 'aa', 'type': 'asa', 'diameter': 1.2}
+      info: {
+        name: '',
+        type: '',
+        category: '',
+        age: '',
+        diameter: '',
+        image: 'logo.png',
+        cycle: '',
+        gravity: '',
+        mass: '',
+        feature: '',
+        fname: ''
+      },
+      belonglist: [
+        { id: 17, name: 'aa', type: 'galaxy', diameter: 1.2, image: 'logo.png' },
+        { id: 18, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' },
+        { id: 19, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' },
+        { id: 20, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' },
+        { id: 21, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' }
       ],
       galaxiescatelog: [
-        {'id': 1, 'text': '11星系', 'name': 'galaxies'},
-        {'id': 2, 'text': '11彗星', 'name': 'comets'},
-        {'id': 3, 'text': '11恒星', 'name': 'stars'},
-        {'id': 4, 'text': '11行星', 'name': 'planets'},
-        {'id': 5, 'text': '11卫星', 'name': 'satellites'}
+        { id: 1, text: '11星系', name: 'galaxies' },
+        { id: 2, text: '11彗星', name: 'comets' },
+        { id: 3, text: '11恒星', name: 'stars' },
+        { id: 4, text: '11行星', name: 'planets' },
+        { id: 5, text: '11卫星', name: 'satellites' }
       ],
-      infoError: [0, 0, 0, 0, 0, 0],
-      ErrorClassActive: {'name': false, 'cycle': false, 'mass': false, 'gravity': false, 'age': false, 'diameter': false}
-    }
+      rules: {
+
+      }
+    };
   },
   computed: {
-    imgurl: function () {
+    imgurl: function() {
       // '../assets/' + this.info.type + '/' + this.info.img
-      console.log('../assets/' + this.info.image)
-      console.log(this.$route.path)
-      return require('../assets/' + this.info.image)
+      console.log('../assets/' + this.info.image);
+      console.log(this.$route.path);
+      // return `../assets/${this.info.image}`;
+      return '../../static/logo.png';
     },
-    chtype: function () {
-      for (var i = 0; i < this.type.length; ++i) {
-        if (this.info.type === this.type[i].name) {
-          return this.type[i].text
-        }
-      }
+    chtype: function() {
+      return chinese[this.info.type];
     },
-    describe: function () {
+    describe: function() {
       if (this.info.type === 'galaxy') {
-        return '该星系所包括的恒星如下：'
+        return '该星系包含以下恒星：';
       } else if (this.info.type === 'star') {
-        return '该恒星被以下行星所围绕:'
+        return '该恒星被以下行星所围绕:';
       } else if (this.info.type === 'planet') {
-        return '该行星被以下卫星所围绕'
+        return '该行星被以下卫星所围绕';
       }
     },
-    seen: function () {
-      if (this.info.type === 'galaxy') {
-        return true
-      } else if (this.info.type === 'star') {
-        return true
-      } else if (this.info.type === 'planet') {
-        return true
-      } else {
-        return false
+    seen: function() {
+      if (this.info.type !== 'comet' && this.info.type !== 'satellite') {
+        return true;
       }
+      return false;
     },
-    inforoute: function () {
-      return this.$route.path
+    inforoute: function() {
+      return this.$route.path;
     }
   },
   methods: {
-    deleteinfo: function () {
-      var returnurl = '/' + this.inforoute.split('/')[1]
-      // window.location.href = returnurl
-      var deleteroute = '/api' + this.inforoute
-      this.$axios.delete(deleteroute)
-        .then(function (response) {
-          window.location.href = returnurl
+    deleteinfo: function() {
+      let returnurl = '/' + this.inforoute.split('/')[1];
+      let deleteroute = '/api' + this.inforoute;
+      const self = this;
+      this.$confirm('此操作将永久删除该天体, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+      }).then(() => {
+        return self.$axios.delete(deleteroute);
+      }).then(function(response) {
+        if (response.data.status !== true) {
+          onfail(self, response, '删除失败');
+        } else {
+          self.$notify.success({
+            title: '成功',
+            message: '删除成功'
+          });
+        }
+        self.$router.push(returnurl);
+      })
+      .catch(error => console.log(error));
+    },
+    updateinfo: function() {
+      if (false) {
+        return;
+      }
+      let apdateroute = '/api' + this.inforoute;
+      const self = this;
+      this.$axios
+        .put(apdateroute, this.info)
+        .then(response => {
+          if (response.data.status !== true) {
+            onfail(self, response, '更新失败');
+          } else {
+            self.$notify.success({
+              title: '成功',
+              message: '更新成功'
+            });
+          }
         })
-        .catch(error => console.log(error))
-    },
-    allInfosRight: function () {
-      this.checkinfo()
-      for (var i = 0; i < 6; ++i) {
-        if (this.infoError[i] === 1) {
-          return false
-        }
-      }
-      return true
-    },
-    checkinfo: function () {
-      if (this.info.name === '') {
-        this.infoError[0] = 1
-        this.ErrorClassActive.name = true
-      } else {
-        this.infoError[0] = 0
-        this.ErrorClassActive.name = false
-      }
-      if (this.info.type === 'planet' || this.info.type === 'comet' || this.info.type === 'satellite') {
-        if (/^\d+(\.\d+)?$/.test(this.info.cycle)) {
-          this.infoError[1] = 0
-          this.ErrorClassActive.cycle = false
-        } else {
-          this.infoError[1] = 1
-          this.ErrorClassActive.cycle = true
-        }
-      }
-      if (this.info.type !== 'galaxy') {
-        if (/^\d+(\.\d+)?$/.test(this.info.mass)) {
-          this.infoError[2] = 0
-          this.ErrorClassActive.mass = false
-        } else {
-          this.infoError[2] = 1
-          this.ErrorClassActive.mass = true
-        }
-      }
-      if (this.info.type === 'comet' || this.info.type === 'planet') {
-        if (/^\d+(\.\d+)?$/.test(this.info.gravity)) {
-          this.infoError[3] = 0
-          this.ErrorClassActive.gravity = false
-        } else {
-          this.infoError[3] = 1
-          this.ErrorClassActive.gravity = true
-        }
-      }
-      if (this.info.type === 'star' || this.info.type === 'planet') {
-        if (/^\d+(\.\d+)?$/.test(this.info.age)) {
-          this.infoError[4] = 0
-          this.ErrorClassActive.age = false
-        } else {
-          this.infoError[4] = 1
-          this.ErrorClassActive.age = true
-        }
-      }
-      if (this.info.type !== 'comet') {
-        if (/^\d+(\.\d+)?$/.test(this.info.diameter)) {
-          this.infoError[5] = 0
-          this.ErrorClassActive.diameter = false
-        } else {
-          this.infoError[5] = 1
-          this.ErrorClassActive.diameter = true
-        }
-      }
-    },
-    updateinfo: function () {
-      if (!this.allInfosRight()) {
-        return
-      }
-      var apdateroute = '/api' + this.inforoute
-      this.$axios.put(apdateroute, this.info)
-        .then(response => console.log(response))
-        .catch(error => console.log(error))
+        .catch(error => console.log(error));
     }
   },
-  mounted: function () {
-    var getroute = '/api' + this.inforoute
-    var listroute = ''
-    this.$axios.get(getroute)
-      .then(function (response) {
-        if (response.status === false) {
-          window.location.href = '/login'
+  mounted: function() {
+    this.info.id = this.inforoute.split('/')[2];
+    let getroute = '/api' + this.inforoute;
+    let listroute = '';
+    const self = this;
+    if (self.info.type === 'galaxy') {
+      listroute = '/api/stars?galaxy=' + self.info.id;
+    } else if (self.info.type === 'star') {
+      listroute = '/api/planets?star=' + self.info.id;
+    } else if (self.info.type === 'planet') {
+      listroute = '/api/satellites?planet=' + self.info.id;
+    }
+    this.$axios
+      .get(getroute)
+      .then(function(response) {
+        if (response.data.status !== true) {
+          onfail(self, response, '获取列表失败');
+        } else {
+          self.info = response.data.data;
         }
-        this.info = response.data
-        if (this.info.type === 'galaxy') {
-          listroute = '/api/stars?galaxy=' + this.info.id
-        } else if (this.info.type === 'star') {
-          listroute = '/api/planets?star=' + this.info.id
-        } else if (this.info.type === 'planets') {
-          listroute = '/api/satellites?planet=' + this.info.id
-        }
-        this.$axios.get(listroute)
-          .then(function (response) {
-            this.belonglist = response.list
-          })
-          .catch(error => console.log(error))
       })
-      .catch(error => console.log(error))
+      .catch(error => console.log(error));
+
+      if (listroute) {
+        this.$axios
+          .get(listroute)
+          .then(function(response) {
+            if (response.data.status !== true) {
+              onfail(self, response, '获取子元素列表失败');
+            } else {
+              self.belonglist = response.data.data;
+            }
+          })
+          .catch(error => console.log(error));
+      }
   }
-}
+};
 </script>
 
 <style>
-.Invalid
-{
-  color: red;
-  width: 150px;
-  border: none;
+.container{
+  margin: 20px 0;
+}
+.col {
+  min-width: 300px;
 }
 
-.first
-{
-  opacity: 0;
+.img {
+  display: inline-block;
+  height: 100%;
+  max-width: 100%;
 }
-.second
-{
-  opacity: 1;
-}
-
 </style>

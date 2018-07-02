@@ -7,8 +7,8 @@ import axios from 'axios';
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+axios.defaults.withCredentials = true;
 Vue.prototype.$axios = axios;
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

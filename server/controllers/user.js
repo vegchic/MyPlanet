@@ -6,7 +6,7 @@ import upload from '../services/upload';
 
 export async function getDetail(ctx) {
     let { username, email, nickname } = ctx.state.user;
-    ctx.body = { username, email, nickname };
+    ctx.body = { status: true, data: { username, email, nickname }};
 }
 
 export async function update(ctx) {
@@ -30,7 +30,7 @@ export async function changePwd(ctx) {
     if (!await checkPassword(password, oldpassword)) {
         ctx.body = { status: false, err: "旧密码错误" };
     } else {
-        ctx.body = { state: true };
+        ctx.body = { status: true };
         await updateUser({ username, password: newpassword });
     }
 }
@@ -56,8 +56,9 @@ export async function uploadAvatar(ctx, next) {
     }
     await upload(avatarPath, user.avatar)(ctx, next);
     if (flag) {
-        await updateUser(user);
+        await updateUser({ avatar: user.avatar, username: user.username });
     }
+    ctx.status = 200;
 }
 
 export async function getAvatar(ctx) {

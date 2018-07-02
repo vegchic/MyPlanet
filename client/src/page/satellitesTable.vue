@@ -8,6 +8,7 @@
 <script>
 import itemList from '../components/itemList'
 import searchBar from '../components/searchBar'
+import onfail from '../util/onfail';
 
 export default {
   components: {
@@ -42,12 +43,14 @@ export default {
     }
   },
   mounted: function () {
-    this.$axios.get('/api/planets')
+    const self = this;
+    this.$axios.get('/api/satellites')
       .then(function (response) {
-        if (response.status === false) {
-          window.location.href = '/login'
+        if (!response.data.status) {
+          onfail(self, response, '获取卫星列表失败');
+        } else {
+          self.satellitelist = response.data.list;
         }
-        this.satellitelist = response.list
       })
       .catch(error => console.log(error))
   }

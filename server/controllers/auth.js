@@ -31,9 +31,9 @@ export async function register(ctx) {
     let err = await validateUser(param);
     if (!err) {
         addUser(param);
-        ctx.redirect('/login');
+        ctx.body = { status: true, err };
     } else {
-        ctx.body = {status: false, err};
+        ctx.body = { status: false, err };
     }
 }
 

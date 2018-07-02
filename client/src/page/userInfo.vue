@@ -1,179 +1,167 @@
 <template>
   <div>
-    <img :src="userImg" id="userImg">
-    <!-- <span class="fileinput-button""> -->
-       <!-- <span>更换头像</span> -->
-    <input type="file" @change="uploadImg">
-    <!-- </span> -->
-    <table>
-      <tr>
-        <td>用户名</td>
-        <td>
-          <input type="text" name="text" v-model='userinfo.username' readonly="readonly">
-        </td>
-      </tr>
-      <tr>
-        <td>昵称</td>
-        <td>
-          <input type="text" name="text" v-model='userinfo.nickname'>
-        </td>
-        <td>
-          <input type="text" class="first second" id="nicknameInvalid" value="不可为空" readonly="readonly"/>
-        </td>
-      </tr>
-      <tr>
-        <td>邮箱</td>
-        <td>
-          <input type="text" name="text" v-model='userinfo.email'>
-        </td>
-        <td>
-          <input type="text" class="first second" id="emailInvalid" value="格式错误" readonly="readonly"/>
-        </td>
-      </tr>
-    </table>
-    <button @click="changePassword = true">更改密码</button>
-    <button @click="update">更新</button>
-    <div v-if="changePassword">
-      <table>
-        <tr>
-          <td>原密码</td>
-          <td>
-            <input type="password" name="oldpassword" v-model='passwords.oldpassword'>
-          </td>
-          <td>
-            <input type="text" class="first second" id="oldInvalid" value="原密码错误" readonly="readonly"/>
-          </td>
-        </tr>
-        <tr>
-          <td>新密码</td>
-          <td>
-            <input type="password" name="newpassword" v-model='passwords.newpassword'>
-          </td>
-          <td>
-            <input type="text" class="first second" id="newInvalid" value="" readonly="readonly"/>
-          </td>
-        </tr>
-      </table>
-      <button @click='changePW'>确定更改</button>
-      <button @click='changePassword = false'>取消</button>
-    </div>
+    <el-row type="flex" justify="center" class="margin">
+      <el-upload ref="avatar"
+        class="avatar-uploader"
+        action="/api/profile/avatar"
+        :show-file-list="false"
+        :auto-upload="false"
+        :before-upload="checkImg"
+        :on-success="GetResponse"
+        :on-error="uploadonfail"
+        accept="jpg png jpeg"
+        :on-change="handleAvatarSuccess">
+        <img :src="userImg" class="avatar">
+      </el-upload>
+    </el-row>
+    <el-row type="flex" justify="center">
+      <el-button type="primary" @click="uploadImg">上传</el-button>
+    </el-row>
+    <el-row type="flex" justify="center">
+      <el-col :span="4">
+        <el-form :model="userinfo" ref="user" :rules="rules1">
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="userinfo.username" auto-complete="off" readonly="true"></el-input>
+          </el-form-item>
+          <el-form-item label="昵称" prop="nickname">
+            <el-input v-model="userinfo.nickname" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="userinfo.email" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item>
+              <el-button type="primary" @click="update">保存</el-button>
+              <el-button @click="changePassword=true">更改密码</el-button>
+          </el-form-item>
+        </el-form>
+        <el-form :model="passwords" v-if="changePassword" :rules="rules2" ref="pwd">
+          <el-form-item label="旧密码" prop="oldpassword">
+            <el-tooltip class="item" effect="dark" content="长度为6-18个任意字符" placement="right">
+              <el-input type="password" v-model="passwords.oldpassword" auto-complete="off"></el-input>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item label="新密码" prop="newpassword">
+            <el-tooltip class="item" effect="dark" content="长度为6-18个任意字符" placement="right">
+              <el-input type="password" v-model="passwords.newpassword" auto-complete="off"></el-input>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item>
+              <el-button type="primary" @click="changePW">保存</el-button>
+              <el-button @click="changePassword=false">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
+import { genValidator } from '../util/validator'
+import onfail from '../util/onfail'
+
 export default {
   name: 'userInfo',
   data () {
     return {
-      userinfo: {'nickname': '', 'email': ''},
+      userinfo: {nickname: '', email: ''},
       changePassword: false,
-      userImg: '',
+      userImg: '/api/profile/avatar',
       passwords: {'oldpassword': '', 'newpassword': ''},
-      imgDataType: 'image/gif, image/jpeg, image/png, image/jpg'
+      imgDataType: 'image/jpeg, image/png, image/jpg',
+      rules1: {
+        nickname: [
+          { validator: genValidator('nickname', '昵称', true), trigger: 'blur' }
+        ],
+        email: [
+          { validator: genValidator('email', '邮箱', true), trigger: 'blur' }
+        ]
+      },
+      rules2: {
+        oldpassword: [
+          { validator: genValidator('password', '旧密码'), trigger: 'blur' }
+        ],
+        newpassword: [
+          { validator: genValidator('password', '新密码'), trigger: 'blur' }
+        ]
+      }
     }
   },
   mounted: function () {
+    const self = this;
     this.$axios.get('/api/profile')
       .then(function (response) {
-        if (response.status === 'false') {
-          window.loactin.href = '/login'
+        if (!response.data.status) {
+          onfail(self, response, '获取个人信息失败');
         } else {
-          this.userinfo = response.data
-        }
-      })
-      .catch(error => console.log(error))
-    this.$axios.get('/api/profile/avatar')
-      .then(function (response) {
-        if (response.status === 'false') {
-          window.loactin.href = '/login'
-        } else {
-          this.userImg = response
+          self.userinfo = response.data.data;
         }
       })
       .catch(error => console.log(error))
   },
   methods: {
-    uploadImg: function (event) {
-      var imgfile = event.target.files[0]
-      var type = imgfile.type
-      var size = imgfile.size
+    handleAvatarSuccess(file) {
+      this.userImg = URL.createObjectURL(file.raw);
+    },
+    GetResponse(res, file) {
+      this.$notify.success({
+        title: '成功',
+        message: '上传成功'
+      });
+    },
+    uploadonfail() {
+      this.$notify.error({
+        title: '错误',
+        message: '上传失败'
+      });
+    },
+    uploadImg() {
+      this.$refs.avatar.submit();
+    },
+    checkImg: function (file) {
+      // const file = ;
+      var type = file.type
+      var size = file.size
       if (this.imgDataType.indexOf(type) === -1) {
-        alert('请选择我们支持的图片格式！')
+        this.$message.error('请上传jpg png jpeg格式！')
         return false
       }
       if (size > 409600) {
-        alert('请选择400k以内的图片！')
+        this.$message.error('请选择400k以内的图片！')
         return false
       }
-      // 显示图片
-      var reader = new FileReader()
-      var self = this
-      reader.readAsDataURL(imgfile)
-      reader.onloadend = function () {
-        self.userImg = this.result
-      }
-      // 上传图片
-      this.$axios.post('/api/profile/avatar', imgfile)
-        .then(function (response) {
-          if (response.status === true) {
-            console.log('更换成功')
-          }
-        })
-        .catch(error => console.log(error))
+      return true;
     },
-    changePW: function () {
-      $('#newInvalid').attr('class', 'first')
-      $('#oldInvalid').attr('class', 'first')
-      if (this.passwords.newpassword.length < 6 || this.passwords.newpassword.length > 18) {
-        if (this.passwords.newpassword === '') {
-          $('#newInvalid').val('不可为空')
-        } else {
-          $('#newInvalid').val('密码长度限制为6-18位')
-        }
-        $('#newInvalid').attr('class', 'second')
-      } else {
+    changePW: async function () {
+      const self = this;
+      let valid = await this.$refs.pwd.validate().catch(()=>{});
+      if (valid) {
         this.$axios.post('/api/profile/password', this.passwords)
           .then(function (response) {
-            if (response.status === 'false') {
-              $('#oldInvalid').attr('class', 'second')
+            if (response.data.status === true) {
+              self.$notify.success({
+                title: '成功',
+                message: '更改成功'
+              });
             } else {
-              console.log('更改成功')
+              onfail(self, response, '更改失败');
             }
           })
           .catch(error => console.log(error))
       }
     },
-    update: function () {
-      var valid = true
-      if (this.userinfo.nickname === '') {
-        $('#nicknameInvalid').attr('class', 'second')
-        valid = false
-      } else {
-        $('#nicknameInvalid').attr('class', 'first')
-      }
-      if (/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/.test(this.userinfo.email)) {
-        $('#emailInvalid').attr('class', 'first')
-      } else {
-        valid = false
-        if (this.userinfo.email === '') {
-          $('#emailInvalid').val('不可为空')
-        } else {
-          $('#emailInvalid').val('格式错误')
-        }
-        $('#emailInvalid').attr('class', 'second')
-      }
-      if (valid === true) {
+    update: async function () {
+      const self = this;
+      let valid = await this.$refs.user.validate().catch(()=>{});
+      if (valid) {
         this.$axios.put('/api/profile', this.userinfo)
           .then(function (response) {
-            if (response.status === true) {
-              console.log('信息更新成功')
-            }
-          })
-          .catch(error => console.log(error))
-        this.$axios.post('/api/profile/avatar', this.userImg)
-          .then(function (response) {
-            if (response.status === true) {
-              console.log('头像更新成功')
+            if (response.data.status === true) {
+              self.$notify.success({
+                title: '成功',
+                message: '更新信息成功'
+              });
+            } else {
+              onfail(self, response, '更新失败');
             }
           })
           .catch(error => console.log(error))
@@ -184,39 +172,31 @@ export default {
 </script>
 
 <style>
-#newInvalid, #oldInvalid, #nicknameInvalid, #emailInvalid
-{
-  color: red;
-  width: 150px;
-  border: none;
+.margin {
+  margin: 10px;
 }
-
-.second
-{
-  opacity: 1;
-}
-
-.first
-{
-  opacity: 0;
-}
-
-#userImg {
-  width: 100px;
-  height: 100px;
-}
-
-/*.fileinput-button {
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
   position: relative;
-  display: inline-block;
   overflow: hidden;
 }
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 
-.fileinput-button input {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  opacity: 0;
-  -ms-filter: 'alpha(opacity=0)';
-}*/
 </style>

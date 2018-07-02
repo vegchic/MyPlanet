@@ -1,26 +1,37 @@
 <template>
-  <div>
-    <router-link tag="div"
-       v-for="(item, index) in slicelist"
-       :key="item.id"
-       :id="item.id"
-       :to="stardetail(item.type, item.id)">
-      <img :src="require('../assets/' + item.image)">
-      <h4 id="name">{{ item.name }}</h4>
-      <span id="detail">类型：{{ item.type }}，直径：{{ item.diameter }}</span>
-      <button v-if="seen" @click.stop="removeTodo(item.type, item.id, index)">X</button>
-    </router-link>
-    <pageChoose :page="totalpage" @changepage="currentpage = $event"></pageChoose>
+  <div class="container">
+    <el-row>
+      <router-link tag="span"
+        v-for="(item, index) in slicelist"
+        :key="item.id"
+        :id="item.id"
+        :to="stardetail(item.type, item.id)">
+          <el-card class="card">
+            <img :src="imgUrl(item)" class="image">
+            <div style="padding: 14px;">
+              <span>{{ item.name }}</span>
+              <div class="bottom clearfix">
+                <span id="detail">类型：{{ item.type }}，直径：{{ item.diameter }}</span>
+                <el-button v-if="seen"  @click.stop="removeChild(item.type, item.id, index)"
+                  type="info" icon="el-icon-delete" circle size="mini"></el-button>
+              </div>
+            </div>
+          </el-card>
+      </router-link>
+    </el-row>
+    <el-pagination class="center"
+        layout="prev, pager, next"
+        v-if="list.length"
+        :total="list.length"
+        :current-page.sync="currentpage">
+    </el-pagination>
   </div>
 </template>
 
 <script>
-import pageChoose from './pageChoose'
+import onfail from '../util/onfail';
 
 export default {
-  components: {
-    pageChoose
-  },
   name: 'itemList',
   data () {
     return {
@@ -30,18 +41,18 @@ export default {
   },
   props: ['list', 'seen'],
   computed: {
-    totalpage: function () {
-      return Math.floor(this.list.length / 10) + 1
-    },
     slicelist: function () {
       if (this.currentpage === this.page) {
-        return this.list.slice(10 * (this.currentpage - 1))
+        return this.list.slice(10 * (this.currentpage - 1));
       } else {
-        return this.list.slice(10 * (this.currentpage - 1), 10 * (this.currentpage - 1) + 10)
+        return this.list.slice(10 * (this.currentpage - 1), 10 * (this.currentpage - 1) + 10);
       }
     }
   },
   methods: {
+    imgUrl(item) {
+      return `../../static/${item.image}`;
+    },
     stardetail: function (type, index) {
       var starurl = '/'
       if (type === 'galaxy') {
@@ -49,16 +60,69 @@ export default {
       } else {
         starurl += type + 's'
       }
-      return starurl + '/' + index
+      return `${starurl}/${index}`
     },
-    removeTodo: function (type, id, index) {
-      var deleteroute = '/api' + this.stardetail(type, id)
-      this.list.splice(index, 1)
-      this.$axios.delete(deleteroute)
-        .then(function (response) {
-        })
-        .catch(error => console.log(error))
+    removeChild: function (type, id, index) {
+      const self = this;
+      let deleteroute = '/api' + this.stardetail(type, id);
+      this.$confirm('此操作将永久删除该天体, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+      }).then(() => {
+        return self.$axios.delete(deleteroute);
+      }).then(function(response) {
+        if (response.data.status !== true) {
+          onfail(self, response, '删除失败');
+        } else {
+          self.list.splice(index, 1);
+          self.$notify.success({
+            title: '成功',
+            message: '删除成功'
+          });
+        }
+        self.$router.push(returnurl);
+      })
+      .catch(error => console.log(error));
     }
   }
 }
 </script>
+
+<style>
+
+.card {
+  width: 200px;
+  height: 300px;
+  margin: 10px;
+  float: left;
+}
+
+.bottom {
+  margin-top: 13px;
+}
+
+.button {
+  padding: 0;
+  float: right;
+}
+
+.image {
+  display: inline-block;
+  width: 100%;
+}
+
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+}
+
+.clearfix:after {
+    clear: both
+}
+
+.center {
+  text-align: center;
+}
+</style>

@@ -1,42 +1,64 @@
 <template>
-   <div id="searchBox">
-      <select id="select" v-model="basename">
-        <option disabled value="">搜索范围</option>
-        <option v-for="item in type"
-          :key="item.id"
-          :value="item.name"
-          >{{ item.text }}</option>
-      </select>
-      <input id="search" placeholder="请输入要搜索的内容" @keyup.enter="searchInfo" type="text" v-model="searchText">
-      <button @click="searchInfo">搜索</button>
-      <router-link id="addButton" to="/add" tag="button">添加</router-link>
+    <div id="searchBox">
+      <el-row>
+        <el-col :span="3" class="padding">
+          <el-select v-model="basename">
+            <el-option disabled value="">搜索范围</el-option>
+            <el-option v-for="item in type"
+              :key="item.id"
+              :value="item.text"
+              >{{ item.text }}</el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="9" class="padding">
+          <el-input  prefix-icon="el-icon-search"
+          @keyup.enter="searchInfo" type="text" v-model="searchText"></el-input>
+        </el-col>
+        <el-col :span="3" class="padding">
+          <el-button icon="el-icon-search" @click="searchInfo">搜索</el-button>
+        </el-col>
+        <el-col :span="3">
+          <el-button icon="el-icon-plus" @click="jump">添加</el-button>
+        </el-col>
+      </el-row>
     </div>
 </template>
 
 <script>
+const chinese = {
+  '所有': 'all',
+  '星系': 'galaxies',
+  '彗星': 'comets',
+  '恒星': 'stars',
+  '行星': 'planets',
+  '卫星': 'satellites',
+}
+
 export default {
   name: 'searchBar',
   data () {
     return {
       searchText: '',
-      basename: 'all',
+      basename: '所有',
       type: [
-        {'id': 0, 'text': '所有', 'name': 'all'},
-        {'id': 1, 'text': '星系', 'name': 'galaxy'},
-        {'id': 2, 'text': '彗星', 'name': 'comet'},
-        {'id': 3, 'text': '恒星', 'name': 'star'},
-        {'id': 4, 'text': '行星', 'name': 'planet'},
-        {'id': 5, 'text': '卫星', 'name': 'satellite'}
+        {'id': 0, 'text': '所有' },
+        {'id': 1, 'text': '星系' },
+        {'id': 2, 'text': '彗星' },
+        {'id': 3, 'text': '恒星' },
+        {'id': 4, 'text': '行星' },
+        {'id': 5, 'text': '卫星' }
       ]
     }
   },
   methods: {
     searchInfo: function () {
       if (this.searchText !== '') {
-        var addr = '/search?type=' + this.basename + '&q=' + this.searchText
-        window.location.href = addr
-        // this.$emit('search', this.searchText)
+        this.$router.push({ path: '/search', query: { q: this.searchText, type: chinese[this.basename] } });
+        // this.$emit('search', this.searchText);
       }
+    },
+    jump: function () {
+      this.$router.push('/add');
     }
   }
 }
@@ -45,24 +67,12 @@ export default {
 <style>
 #searchBox {
   width: 800px;
-  height: 30px;
   justify-content: center;
   align-items: center;
-}
-#select {
-  height: 28px;
+  margin: 10px;
 }
 
-#search {
-  width: 300px;
-  height: 25px;
-  z-index: 30;
-  font-size: 18px;
-  line-height:25px;
-  border-width: 2px;
-  border-color: #066196;
-  font-family: 'microsoft yahei';
-  color: #066196;
-  background:url(../assets/touming.png) repeat 0px 0px;
+.padding {
+  margin: 0px 10px;
 }
 </style>

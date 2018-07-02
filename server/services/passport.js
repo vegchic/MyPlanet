@@ -1,5 +1,5 @@
 import passport from 'koa-passport';
-import { Strategy as LocalStrategy} from 'passport-local';
+import { Strategy as LocalStrategy } from 'passport-local';
 import { fetchOne, checkPassword } from '../models/user';
 
 passport.serializeUser((user, done) => {

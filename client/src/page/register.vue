@@ -1,138 +1,99 @@
 <template>
-  <div id="registerBox">
-    <h1>注册</h1>
-    <div>
-    <p><span>用户注册</span></p>
-    <p>用户名
-       <input type="text" class="_input" id="username" name="username" @blur="checkinfo(1)" v-model="userinfo.username"/>
-       <input type="text" class="first second" id="usernameInvalid" value="格式错误" readonly="readonly"/>
-    </p>
-    <p>密码
-      <input type="password" class="_input" id="password" name="password" @blur="checkinfo(2)" v-model="userinfo.password"/>
-      <input type="text" class="first second" id="passwordInvalid" value="长度错误" readonly="readonly"/>
-    </p>
-    <p>昵称
-      <input type="text" class="_input" id="nickname" name="nickname" @blur="checkinfo(3)" v-model="userinfo.nickname"/>
-      <input type="text" class="first second" id="nicknameInvalid" value="不可为空" readonly="readonly"/>
-    </p>
-    <p>邮箱
-      <input type="text" class="_input" id="email" name="email" @blur="checkinfo(4)" v-model="userinfo.email"/>
-      <input type="text" class="first second" id="emailInvalid" value="格式错误" readonly="readonly"/>
-    </p>
-      <button id="reset" @click="reset">重置</button>
-      <button id="register" @click="register">注册</button>
-    </div>
-    <div>
-      <ul id="tips">注册要求：
-        <li>账号为数字、字母、下划线组成，长度为6-18个字符，请以字母开头；</li>
-        <li>密码长度为6-18个任意字符；</li>
-        <li>邮箱请输入正确有效的邮箱；</li>
-        <li>请注意任意数据不能为空。</li>
-      </ul>
-      没按照要求则无法成功注册。
-    </div>
+  <div>
+    <el-row type="flex" justify="center">
+      <el-col :span="2" class="container"><h1>注册</h1></el-col>
+    </el-row>
+    <el-row type="flex" justify="center">
+      <el-col :span="4" class="container">
+        <el-form ref="register" :model="userinfo" :rules="rules" label-width="80px">
+          <el-tooltip class="item" effect="dark" content="以字母开头，数字、字母、下划线组成，长度为6-18个字符" placement="right">
+            <el-form-item label="用户名" prop="username">
+              <el-input v-model="userinfo.username" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="长度为6-18个任意字符" placement="right">
+            <el-form-item label="密码" prop="password">
+              <el-input type="password" v-model="userinfo.password" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="可选，1到17个字符" placement="right">          
+            <el-form-item label="昵称" prop="nickname">
+              <el-input v-model="userinfo.nickname" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="可选，形如jack@example.com" placement="right">
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="userinfo.email" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-tooltip>
+          <el-form-item>
+              <el-button type="primary" @click="register">注册</el-button>
+              <el-button @click="reset">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
+import { genValidator } from '../util/validator';
+
 export default {
   name: 'register',
   data () {
+    let checkUsername = genValidator('username', '用户名');
+    let checkPassword = genValidator('password', '密码');
+    let checkNickname = genValidator('nickname', '昵称', true);
+    let checkEmail = genValidator('email', '邮箱', true);
+
     return {
       userinfo: {'username': '', 'password': '', 'nickname': '', 'email': ''},
-      infoError: [1, 1, 1, 1]
+      rules: {
+        username: [
+          { validator: checkUsername, trigger: 'blur' },
+        ],
+        password: [
+          { validator: checkPassword, trigger: 'blur' },
+        ],
+        nickname: [
+          { validator: checkNickname, trigger: 'blur' },
+        ],
+        email: [
+          { validator: checkEmail, trigger: 'blur' },
+        ]
+      }
     }
   },
   methods: {
     reset: function () {
-      this.userinfo.username = ''
-      this.userinfo.password = ''
-      this.userinfo.nickname = ''
-      this.userinfo.email = ''
-      for (var i = 0; i < 4; ++i) {
-        this.infoError[i] = 1
-      }
-      $('#usernameInvalid').attr('class', 'first')
-      $('#passwordInvalid').attr('class', 'first')
-      $('#nicknameInvalid').attr('class', 'first')
-      $('#emailInvalid').attr('class', 'first')
+      this.$refs['register'].resetFields();
     },
-    register: function () {
-      if (!this.allInfosRight()) {
-        return
-      }
-      this.$axios.post('/api/register', this.userinfo)
-        .then(function (response) {
-          if (response.status === true) {
-            window.location.href = '/login'
-          } else {
-            console.log('this username has existed')
-          }
-        })
-        .catch(error => console.log(error))
-    },
-    allInfosRight: function () {
-      for (var i = 0; i < 4; ++i) {
-        if (this.infoError[i] === 1) {
-          return false
+    register: async function () {
+      let valid = this.$refs['register'].validate().catch(() => {});
+      if (valid) {
+        let response = await this.$axios.post('/api/register', this.userinfo);
+        if (response.data.status === true) {
+          await this.$confirm('注册成功', '提示', {
+            confirmButtonText: '返回注册页面',
+            type: 'info',
+            center: true,
+          }).catch(() => {});
+          this.$router.push('/login');
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: response.data.err || '注册失败'
+          });
         }
       }
-      return true
     },
-    checkinfo: function (index) {
-      switch (index) {
-        case 1:
-          if (/^[a-zA-Z]\w{5,17}/.test(this.userinfo.username)) {
-            $('#usernameInvalid').attr('class', 'first')
-            this.infoError[0] = 0
-          } else {
-            if (this.userinfo.username === '') {
-              $('#usernameInvalid').val('不可为空')
-            }
-            $('#usernameInvalid').attr('class', 'second')
-            this.infoError[0] = 1
-          }
-          break
-        case 2:
-          if (this.userinfo.password.length < 6 || this.userinfo.password.length > 18) {
-            if (this.userinfo.password === '') {
-              $('#passwordInvalid').val('不可为空')
-            }
-            $('#passwordInvalid').attr('class', 'second')
-            this.infoError[1] = 1
-          } else {
-            $('#passwordInvalid').attr('class', 'first')
-            this.infoError[1] = 0
-          }
-          break
-        case 3:
-          if (this.userinfo.nickname === '') {
-            $('#nicknameInvalid').attr('class', 'second')
-            this.infoError[2] = 1
-          } else {
-            $('#usernameInvalid').attr('class', 'first')
-            this.infoError[2] = 0
-          }
-          break
-        case 4:
-          if (/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/.test(this.userinfo.email)) {
-            $('#emailInvalid').attr('class', 'first')
-            this.infoError[3] = 0
-          } else {
-            if (this.userinfo.email === '') {
-              $('#emailInvalid').val('不可为空')
-            }
-            $('#emailInvalid').attr('class', 'second')
-            this.infoError[3] = 1
-          }
-          break
-        default: break
-      }
-    }
   }
 }
 </script>
 
 <style>
-/* @import '../assets/css/register.css'; */
+  .container {
+    min-width: 300px !important;
+  }
 </style>
