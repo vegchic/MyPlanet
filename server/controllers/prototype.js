@@ -19,7 +19,7 @@ export default class Controller {
                                     this.model.getWithRelation({ [this.type]: id }, this.father) ]);
             if (list.length) {
                 if (father.length) {
-                    list[0].father = father[0].name;
+                    list[0].fname = father[0].name;
                     if (this.type === TYPE.PLANET || this.type === TYPE.SATELLITE) {
                         list[0].distance = father[0].distance;
                     }
