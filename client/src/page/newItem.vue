@@ -1,12 +1,6 @@
 <template>
   <div class="container">
-    <el-row type="flex" justify="center">
-      <el-carousel arrow="always" :autoplay="false" class="carousel">
-        <el-carousel-item v-for="item in imglist" :key="item" class="center" @change="changeImg">
-          <img :src="img">
-        </el-carousel-item>
-      </el-carousel>
-    </el-row>
+    <gallery :type="iteminfo.category" v-on:imgChange="iteminfo.image=`${$event}.png`" :id="initID"></gallery>
     <el-row type="flex" justify="center">
       <el-col :span="4">
         <el-form :model="iteminfo" ref="item" :rules="rules">
@@ -61,27 +55,27 @@
             </el-select>
           </el-form-item>
           <el-form-item label="周期（年）" v-if="iteminfo.category === '行星' || iteminfo.category === '彗星' || iteminfo.type === '卫星'" prop="cycle">
-            <el-tooltip class="item" effect="dark" content="最大为5位数字" placement="right">
+            <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
               <el-input v-model.number="iteminfo.cycle" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="质量（千吨）" v-if="iteminfo.category !== '星系'" prop="mass">
-            <el-tooltip class="item" effect="dark" content="最大为5位数字" placement="right">
+            <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
               <el-input v-model.number="iteminfo.mass" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="重力（g）" v-if="iteminfo.category === '行星'" prop="gravity">
-            <el-tooltip class="item" effect="dark" content="最大为5位数字" placement="right">
+            <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
               <el-input v-model.number="iteminfo.gravity" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="年龄（亿年）" v-if="iteminfo.category === '恒星' || iteminfo.category === '行星'" prop="age">
-            <el-tooltip class="item" effect="dark" content="最大为5位数字" placement="right">
+            <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
               <el-input v-model.number="iteminfo.age" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
-          <el-form-item label="直径（千公里）" prop="diameter">
-            <el-tooltip class="item" effect="dark" content="最大为5位数字" placement="right">
+          <el-form-item label="直径（光年）" prop="diameter">
+            <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
               <el-input v-model.number="iteminfo.diameter" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
@@ -104,6 +98,7 @@
 <script>
 import { genValidator } from '../util/validator'
 import onfail from '../util/onfail'
+import gallery from '../components/gallery'
 
 const chinese = {
   '星系': 'galaxies',
@@ -114,6 +109,7 @@ const chinese = {
 }
 export default {
   name: 'newItem',
+  components: { gallery },
   data () {
     const checkName = genValidator('name', '名字');
     const checkAge = genValidator('number', '年龄');
@@ -121,7 +117,7 @@ export default {
     const checkDiameter = genValidator('number', '直径');
     const checkCycle = genValidator('number', '周期');
     const checkGravity = genValidator('number', '重力');
-    const checkFeature = genValidator('name', '年龄', true);
+    const checkFeature = genValidator('name', '特点', true);
 
     return {
       alltype: [
@@ -141,11 +137,11 @@ export default {
       planetbelong: '',
       iteminfo: {
         name: '',
-        category: '',
+        category: '星系',
         type: '',
         age: '',
         diameter: '',
-        image: '',
+        image: '0.png',
         cycle: '',
         gravity: '',
         mass: '',
@@ -155,8 +151,6 @@ export default {
       galaxylist: [],
       starlist: [],
       planetlist: [],
-      imglist: ['logo.png'],
-      imgitem: 0,
       rules: {
         name: [
           { validator: checkName, trigger: 'blur' }
@@ -191,11 +185,6 @@ export default {
       }
     }
   },
-  computed: {
-    img: function () {
-      return '../assets/' + this.imglist[this.imgitem];
-    }
-  },
   mounted: function () {
     const self = this;
     function getlist(url, list, type) {
@@ -218,6 +207,11 @@ export default {
       this.reset();
     }
   },
+  computed: {
+    initID() {
+      return 0;
+    },
+  },
   methods: {
     reset: function () {
       this.$refs['item'].resetFields();
@@ -227,8 +221,8 @@ export default {
       if (valid) {
         const url = `/api/${chinese[this.iteminfo.category]}`;
         let response = await this.$axios.post(url, this.iteminfo);
-        if (response.data.status !== true) {
-          onfail(self, response, '添加失败');
+        if (!response.data.status) {
+          onfail(this, response, '添加失败');
         } else {
           this.$notify.success({
             title: '成功',
@@ -238,13 +232,6 @@ export default {
         }
       }
     },
-    changeImg: function () {
-      if (this.imgitem < 2) {
-        this.imgitem++
-      } else {
-        this.imgitem = 0
-      }
-    }
   }
 }
 </script>

@@ -22,8 +22,10 @@ export function genValidator(needed, optional) {
             return false;
         }
         optional.forEach(prop => {
-            if (!data[prop]) {
+            if (!data[prop] && data[prop] !== 0) {
                 Reflect.deleteProperty(data, prop);
+            } else {
+                res[prop] = data[prop];
             }
         });
         return res;

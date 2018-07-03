@@ -23,7 +23,11 @@ export default class Controller {
                     list[0].distance = father[0].distance;
                 }
             }
-            ctx.body = { status: true, data: list[0] };
+            if (list.length) {
+                ctx.body = { status: true, data: list[0] };
+            } else {
+                ctx.body = { status: false, err: ERR.NOT_EXIST };
+            }
         } catch (err) {
             ctx.body = { status: false, err:  ERR.ONE_FAIL };
             throw err;

@@ -5,14 +5,15 @@
         v-for="(item, index) in slicelist"
         :key="item.id"
         :id="item.id"
-        :to="stardetail(item.type, item.id)">
+        :to="stardetail(category, item.id)">
           <el-card class="card">
             <img :src="imgUrl(item)" class="image">
             <div style="padding: 14px;">
               <span>{{ item.name }}</span>
               <div class="bottom clearfix">
-                <span id="detail">类型：{{ item.type }}，直径：{{ item.diameter }}</span>
-                <el-button v-if="seen"  @click.stop="removeChild(item.type, item.id, index)"
+                <div id="detail">类型：{{ toChinese(category) }}</div>
+                <div>直径：{{ item.diameter }}</div>
+                <el-button v-if="seen"  @click.stop="removeChild(category, item.id, index)"
                   type="info" icon="el-icon-delete" circle size="mini"></el-button>
               </div>
             </div>
@@ -31,6 +32,14 @@
 <script>
 import onfail from '../util/onfail';
 
+const chinese = {
+  'galaxy': '星系',
+  'comet': '彗星',
+  'star': '恒星',
+  'planet': '行星',
+  'satellite': '卫星',
+}
+
 export default {
   name: 'itemList',
   data () {
@@ -39,7 +48,7 @@ export default {
       url: ''
     }
   },
-  props: ['list', 'seen'],
+  props: ['list', 'seen', 'category'],
   computed: {
     slicelist: function () {
       if (this.currentpage === this.page) {
@@ -51,7 +60,10 @@ export default {
   },
   methods: {
     imgUrl(item) {
-      return `../../static/${item.image}`;
+      return `../../static/${this.category}/${item.image}`;
+    },
+    toChinese() {
+      return chinese[this.category];
     },
     stardetail: function (type, index) {
       var starurl = '/'

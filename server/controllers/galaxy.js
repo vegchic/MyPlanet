@@ -13,7 +13,11 @@ class Galaxy extends Controller {
         let list;
         try {
             list = await this.model.fetch({ uid, id });
-            ctx.body = { status: true, data: list[0] }; 
+            if (list.length) {
+                ctx.body = { status: true, data: list[0] };
+            } else {
+                ctx.body = { status: false, err: ERR.NOT_EXIST };
+            }
         } catch (err) {
             ctx.body = { status: false, err:  ERR.ONE_FAIL };
             throw err;

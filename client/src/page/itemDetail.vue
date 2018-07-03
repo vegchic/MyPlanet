@@ -2,32 +2,38 @@
   <div class="container">
   <div>
     <el-row type="flex" justify="center">
-        <img :src="imgurl" class="img"/>
+      <gallery :type="chtype" v-on:imgChange="info.image=`${$event}.png`" :id="imgurl"></gallery>
       <!-- <el-col :span="6" class="col"> -->
         <el-form ref="detail" :model="info" :rules="rules" label-width="150px">
           <el-form-item label="名字" prop="name">
             <el-input v-model="info.name" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="类型" prop="type">
+          <el-form-item label="类型" prop="category">
             <el-input v-model="chtype" auto-complete="off" readonly="true"></el-input>
           </el-form-item>
-          <el-form-item label="类别" prop="category" v-if="info.type='galaxy'">
-            <el-input v-model="info.category" auto-complete="off"></el-input>
+          <el-form-item label="类别" prop="category" v-if="info.category === 'galaxy'">
+            <el-select v-model="info.type">
+              <el-option value="" disabled>请选择</el-option>
+              <el-option v-for="item in galaxiescatelog"
+              :key="item.id"
+              :value="item.text"
+              >{{ item.text }}</el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="周期(年)"
-            prop="cycle" v-if="info.type === 'planet' || info.type === 'comet' || info.type === 'satellite'">
+            prop="cycle" v-if="info.category === 'planet' || info.category === 'comet' || info.category === 'satellite'">
             <el-input v-model="info.cycle" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="质量(千吨)" prop="mass" v-if="info.type !== 'galaxy'">
+          <el-form-item label="质量(千吨)" prop="mass" v-if="info.category !== 'galaxy'">
             <el-input v-model="info.mass" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="重力(g)" prop="gravity" v-if="info.type === 'planet'">
+          <el-form-item label="重力(g)" prop="gravity" v-if="info.category === 'planet'">
             <el-input v-model="info.gravity" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="年龄（亿年）" prop="age" v-if="info.type === 'star' || info.type === 'planet'">
+          <el-form-item label="年龄（亿年）" prop="age" v-if="info.category === 'star' || info.category === 'planet'">
             <el-input v-model="info.age" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="直径（千公里）">
+          <el-form-item label="直径（光年）" prop="diameter">
             <el-input v-model="info.diameter" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="特点" prop="feature">
@@ -51,21 +57,40 @@
 <script>
 import itemList from '../components/itemList';
 import onfail from '../util/onfail';
+import { genValidator } from '../util/validator';
+import gallery from '../components/gallery';
 
 const chinese = {
-  'galaxies': '星系',
-  'comets': '彗星',
-  'stars': '恒星',
-  'planets': '行星',
-  'satellites': '卫星',
+  'galaxy': '星系',
+  'comet': '彗星',
+  'star': '恒星',
+  'planet': '行星',
+  'satellite': '卫星',
 }
+
+const single = {
+  'galaxies': 'galaxy',
+  'comets': 'comet',
+  'stars': 'star',
+  'planets': 'planet',
+  'satellites': 'satellite',
+}
+
 
 export default {
   components: {
-    itemList
+    itemList,
+    gallery
   },
   name: 'itemDetail',
   data() {
+    const checkName = genValidator('name', '名字');
+    const checkAge = genValidator('number', '年龄');
+    const checkMass = genValidator('number', '质量');
+    const checkDiameter = genValidator('number', '直径');
+    const checkCycle = genValidator('number', '周期');
+    const checkGravity = genValidator('number', '重力');
+    const checkFeature = genValidator('name', '特点', true);
     return {
       info: {
         name: '',
@@ -80,47 +105,65 @@ export default {
         feature: '',
         fname: ''
       },
-      belonglist: [
-        { id: 17, name: 'aa', type: 'galaxy', diameter: 1.2, image: 'logo.png' },
-        { id: 18, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' },
-        { id: 19, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' },
-        { id: 20, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' },
-        { id: 21, name: 'aa', type: 'asa', diameter: 1.2, image:'logo.png' }
-      ],
       galaxiescatelog: [
-        { id: 1, text: '11星系', name: 'galaxies' },
-        { id: 2, text: '11彗星', name: 'comets' },
-        { id: 3, text: '11恒星', name: 'stars' },
-        { id: 4, text: '11行星', name: 'planets' },
-        { id: 5, text: '11卫星', name: 'satellites' }
+        {id: 1, text: '椭圆星系'},
+        {id: 2, text: '螺旋星系'},
+        {id: 3, text: '不规则星系'},
       ],
+      belonglist: [],
       rules: {
-
+        name: [
+          { validator: checkName, trigger: 'blur' }
+        ],
+        age: [
+          { validator: checkAge, trigger: 'blur' }
+        ],
+        mass: [
+          { validator: checkMass, trigger: 'blur' }
+        ],
+        diameter: [
+          { validator: checkDiameter, trigger: 'blur' }
+        ],
+        feature: [
+          { validator: checkFeature, trigger: 'blur' }
+        ],
+        cycle: [
+          { validator: checkCycle, trigger: 'blur' }
+        ],
+        gravity: [
+          { validator: checkGravity, trigger: 'blur' }
+        ],
+        fname: [
+          {}
+        ],
+        type: [
+          {}
+        ],
+        category: [
+          {}
+        ]
       }
     };
   },
   computed: {
     imgurl: function() {
-      // '../assets/' + this.info.type + '/' + this.info.img
-      console.log('../assets/' + this.info.image);
-      console.log(this.$route.path);
-      // return `../assets/${this.info.image}`;
-      return '../../static/logo.png';
+      return parseInt(this.info.image[0]);
     },
     chtype: function() {
-      return chinese[this.info.type];
+      return chinese[this.info.category];
     },
     describe: function() {
-      if (this.info.type === 'galaxy') {
+      if (this.info.category === 'galaxy') {
         return '该星系包含以下恒星：';
-      } else if (this.info.type === 'star') {
+      } else if (this.info.category === 'star') {
         return '该恒星被以下行星所围绕:';
-      } else if (this.info.type === 'planet') {
+      } else if (this.info.category === 'planet') {
         return '该行星被以下卫星所围绕';
       }
+      return '';
     },
     seen: function() {
-      if (this.info.type !== 'comet' && this.info.type !== 'satellite') {
+      if (this.info.category !== 'comet' && this.info.category !== 'satellite') {
         return true;
       }
       return false;
@@ -141,7 +184,7 @@ export default {
       }).then(() => {
         return self.$axios.delete(deleteroute);
       }).then(function(response) {
-        if (response.data.status !== true) {
+        if (!response.data.status) {
           onfail(self, response, '删除失败');
         } else {
           self.$notify.success({
@@ -153,49 +196,55 @@ export default {
       })
       .catch(error => console.log(error));
     },
-    updateinfo: function() {
-      if (false) {
-        return;
+    updateinfo: async function() {
+      let valid = await this.$refs.detail.validate().catch(()=>{});
+      if (valid) {
+        let apdateroute = '/api' + this.inforoute;
+        const self = this;
+        this.$axios
+          .put(apdateroute, this.info)
+          .then(response => {
+            if (!response.data.status) {
+              onfail(self, response, '更新失败');
+            } else {
+              self.$notify.success({
+                title: '成功',
+                message: '更新成功'
+              });
+            }
+          })
+          .catch(error => console.log(error));
       }
-      let apdateroute = '/api' + this.inforoute;
-      const self = this;
-      this.$axios
-        .put(apdateroute, this.info)
-        .then(response => {
-          if (response.data.status !== true) {
-            onfail(self, response, '更新失败');
-          } else {
-            self.$notify.success({
-              title: '成功',
-              message: '更新成功'
-            });
-          }
-        })
-        .catch(error => console.log(error));
     }
   },
   mounted: function() {
-    this.info.id = this.inforoute.split('/')[2];
+    const paths =  this.inforoute.split('/');
     let getroute = '/api' + this.inforoute;
     let listroute = '';
     const self = this;
-    if (self.info.type === 'galaxy') {
+    if (paths[1] === 'galaxies') {
       listroute = '/api/stars?galaxy=' + self.info.id;
-    } else if (self.info.type === 'star') {
+    } else if (paths[1] === 'stars') {
       listroute = '/api/planets?star=' + self.info.id;
-    } else if (self.info.type === 'planet') {
+    } else if (paths[1] === 'planets') {
       listroute = '/api/satellites?planet=' + self.info.id;
     }
     this.$axios
       .get(getroute)
       .then(function(response) {
-        if (response.data.status !== true) {
-          onfail(self, response, '获取列表失败');
+        if (!response.data.status) {
+          onfail(self, response, '获取信息失败');
+          if (response.data.err === '目标天体不存在') {
+            self.$router.push(`/${paths[1]}`);
+          }
         } else {
           self.info = response.data.data;
+          self.info.id = paths[2];
+          self.info.category = single[paths[1]];
         }
       })
       .catch(error => console.log(error));
+
 
       if (listroute) {
         this.$axios
@@ -204,7 +253,7 @@ export default {
             if (response.data.status !== true) {
               onfail(self, response, '获取子元素列表失败');
             } else {
-              self.belonglist = response.data.data;
+              self.belonglist = response.data.list;
             }
           })
           .catch(error => console.log(error));
@@ -223,7 +272,7 @@ export default {
 
 .img {
   display: inline-block;
-  height: 100%;
+  height: 200px;
   max-width: 100%;
 }
 </style>

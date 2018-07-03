@@ -4,7 +4,7 @@ const reg = {
   password: /^(\w){6,20}$/,
   nickname: /^.{1,17}$/,
   name: /^.{1,17}$/,
-  number: /^\d{1,5}$/
+  number: /^([1-9]+(\.\d+)?|0\.\d+)$/
 };
 
 export function genValidator(prop, show, optional = false) {

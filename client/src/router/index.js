@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import menubar from '@/components/menubar'
-import searchBar from '@/components/searchBar'
+import axios from 'axios';
+import menubar from '@/components/menuBar'
 import galaxiesTable from '@/page/galaxiesTable'
 import starsTable from '@/page/starsTable';
 import cometsTable from '@/page/cometsTable';
@@ -150,6 +150,19 @@ const router =  new Router({
       }
     }
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  axios.get('/api/galaxies').then(response => {
+    if (!response.data.status && response.data.err === '未登录'
+        && to.path !== '/login' && to.path !== 'register') {
+      next('/login');
+    } else if (response.data.status && (to.path === '/login' || to.path === '/register')) {
+      next('/home');
+    } else {
+      next();
+    }
+  });
 });
 
 export default router;
