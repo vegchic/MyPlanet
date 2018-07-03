@@ -155,7 +155,7 @@ const router =  new Router({
 router.beforeEach((to, from, next) => {
   axios.get('/api/galaxies').then(response => {
     if (!response.data.status && response.data.err === '未登录'
-        && to.path !== '/login' && to.path !== 'register') {
+        && to.path !== '/login' && to.path !== '/register') {
       next('/login');
     } else if (response.data.status && (to.path === '/login' || to.path === '/register')) {
       next('/home');
