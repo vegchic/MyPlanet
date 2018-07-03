@@ -28,7 +28,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="所属星系" v-if="iteminfo.category === '恒星' || iteminfo.category === '彗星'" prop="fname">
-            <el-select id="select" v-model="galaxybelong">
+            <el-select id="select" v-model="iteminfo.fname">
               <el-option value="（无主）">（无主）</el-option>
               <el-option v-for="item in galaxylist"
                 :key="item.id"
@@ -37,7 +37,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="所属恒星" v-if="iteminfo.category === '行星'" prop="fname">
-            <el-select id="select" v-model="galaxybelong">
+            <el-select id="select" v-model="iteminfo.fname">
               <el-option value="（无主）">（无主）</el-option>
               <el-option v-for="item in starlist"
                 :key="item.id"
@@ -46,13 +46,18 @@
             </el-select>
           </el-form-item>
           <el-form-item label="所属行星" v-if="iteminfo.category === '卫星'" prop="fname">
-            <el-select id="select" v-model="galaxybelong">
+            <el-select id="select" v-model="iteminfo.fname">
               <el-option value="（无主）">（无主）</el-option>
               <el-option v-for="item in planetlist"
                 :key="item.id"
                 :value="item.name"
               >{{ item.name }}</el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="距离（光年）" v-if="iteminfo.category === '行星' || iteminfo.category === '卫星'" prop="distance">
+            <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
+              <el-input v-model.number="iteminfo.distance" auto-complete="off"></el-input>
+            </el-tooltip>
           </el-form-item>
           <el-form-item label="周期（年）" v-if="iteminfo.category === '行星' || iteminfo.category === '彗星' || iteminfo.type === '卫星'" prop="cycle">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
@@ -114,6 +119,7 @@ export default {
     const checkName = genValidator('name', '名字');
     const checkAge = genValidator('number', '年龄');
     const checkMass = genValidator('number', '质量');
+    const checkDistance = genValidator('number', '距离');
     const checkDiameter = genValidator('number', '直径');
     const checkCycle = genValidator('number', '周期');
     const checkGravity = genValidator('number', '重力');
@@ -140,6 +146,7 @@ export default {
         category: '星系',
         type: '',
         age: '',
+        distance: '',
         diameter: '',
         image: '0.png',
         cycle: '',
@@ -172,6 +179,9 @@ export default {
         ],
         gravity: [
           { validator: checkGravity, trigger: 'blur' }
+        ],
+        distance: [
+          { validator: checkDistance, trigger: 'blur' }
         ],
         fname: [
           {}

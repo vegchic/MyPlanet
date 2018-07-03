@@ -20,9 +20,13 @@
               >{{ item.text }}</el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="距离(光年)"
+            prop="distance" v-if="info.category === 'planet' ||  info.category === 'satellite'">
+            <el-input v-model="info.cycle" auto-complete="off"></el-input>
+          </el-form-item>
           <el-form-item label="周期(年)"
             prop="cycle" v-if="info.category === 'planet' || info.category === 'comet' || info.category === 'satellite'">
-            <el-input v-model="info.cycle" auto-complete="off"></el-input>
+            <el-input v-model="info.distance" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="质量(千吨)" prop="mass" v-if="info.category !== 'galaxy'">
             <el-input v-model="info.mass" auto-complete="off"></el-input>
@@ -88,6 +92,7 @@ export default {
     const checkAge = genValidator('number', '年龄');
     const checkMass = genValidator('number', '质量');
     const checkDiameter = genValidator('number', '直径');
+    const checkDistance = genValidator('number', '距离');
     const checkCycle = genValidator('number', '周期');
     const checkGravity = genValidator('number', '重力');
     const checkFeature = genValidator('name', '特点', true);
@@ -96,9 +101,10 @@ export default {
         name: '',
         type: '',
         category: '',
+        distance: '',
         age: '',
         diameter: '',
-        image: 'logo.png',
+        image: '0.png',
         cycle: '',
         gravity: '',
         mass: '',
@@ -120,6 +126,9 @@ export default {
         ],
         mass: [
           { validator: checkMass, trigger: 'blur' }
+        ],
+        distance: [
+          { validator: checkDistance, trigger: 'blur' }
         ],
         diameter: [
           { validator: checkDiameter, trigger: 'blur' }

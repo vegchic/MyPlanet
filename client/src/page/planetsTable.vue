@@ -1,7 +1,7 @@
 <template>
   <div>
     <searchBar></searchBar>
-    <itemList :list="planetslist" :seen="false" :category="planet"></itemList>
+    <itemList :list="planetslist" :seen="false" :category="'planet'"></itemList>
   </div>
 </template>
 
