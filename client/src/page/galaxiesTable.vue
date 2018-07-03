@@ -2,7 +2,7 @@
   <!-- <el-container> -->
   <div>
     <searchBar></searchBar>
-    <itemList :list="galaxieslist" :seen="false" :category="'galaxy'"></itemList>
+    <itemList :list="galaxieslist" :seen="false"></itemList>
   </div>
   <!-- </el-container> -->
 </template>

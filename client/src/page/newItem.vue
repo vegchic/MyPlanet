@@ -59,7 +59,7 @@
               <el-input v-model.number="iteminfo.distance" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
-          <el-form-item label="周期（年）" v-if="iteminfo.category === '行星' || iteminfo.category === '彗星' || iteminfo.type === '卫星'" prop="cycle">
+          <el-form-item label="周期（年）" v-if="iteminfo.category === '行星' || iteminfo.category === '彗星' || iteminfo.category === '卫星'" prop="cycle">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
               <el-input v-model.number="iteminfo.cycle" auto-complete="off"></el-input>
             </el-tooltip>
@@ -238,7 +238,7 @@ export default {
             title: '成功',
             message: '添加成功'
           })
-          this.$router.push(`/${chinese[this.iteminfo.category]}`);
+          this.$router.push(`/${chinese[this.iteminfo.category]}/${response.data.data.id}`);
         }
       }
     },

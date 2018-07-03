@@ -14,6 +14,7 @@ class Galaxy extends Controller {
         try {
             list = await this.model.fetch({ uid, id });
             if (list.length) {
+                list[0].category = this.type;
                 ctx.body = { status: true, data: list[0] };
             } else {
                 ctx.body = { status: false, err: ERR.NOT_EXIST };
@@ -29,6 +30,9 @@ class Galaxy extends Controller {
         let list;
         try {
             list = await this.model.fetch({ uid });
+            list.forEach(val => {
+                val.category = this.type;
+            });
             ctx.body = { status: true, list };     
         } catch (err) {
             ctx.body = { status: false, err: ERR.LIST_FAIL };

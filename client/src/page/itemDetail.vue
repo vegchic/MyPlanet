@@ -20,13 +20,40 @@
               >{{ item.text }}</el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="所属星系" v-if="info.category === 'star' || info.category === 'comet'" prop="fname">
+            <el-select id="select" v-model="info.fname">
+              <el-option value="（无主）">（无主）</el-option>
+              <el-option v-for="item in fatherList"
+                :key="item.id"
+                :value="item.name"
+              >{{ item.name }}</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="所属恒星" v-if="info.category === 'planet'" prop="fname">
+            <el-select id="select" v-model="info.fname">
+              <el-option value="（无主）">（无主）</el-option>
+              <el-option v-for="item in fatherList"
+                :key="item.id"
+                :value="item.name"
+              >{{ item.name }}</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="所属行星" v-if="info.category === 'satellite'" prop="fname">
+            <el-select id="select" v-model="info.fname">
+              <el-option value="（无主）">（无主）</el-option>
+              <el-option v-for="item in fatherList"
+                :key="item.id"
+                :value="item.name"
+              >{{ item.name }}</el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="距离(光年)"
             prop="distance" v-if="info.category === 'planet' ||  info.category === 'satellite'">
-            <el-input v-model="info.cycle" auto-complete="off"></el-input>
+            <el-input v-model="info.distance" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="周期(年)"
             prop="cycle" v-if="info.category === 'planet' || info.category === 'comet' || info.category === 'satellite'">
-            <el-input v-model="info.distance" auto-complete="off"></el-input>
+            <el-input v-model="info.cycle" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="质量(千吨)" prop="mass" v-if="info.category !== 'galaxy'">
             <el-input v-model="info.mass" auto-complete="off"></el-input>
@@ -72,15 +99,6 @@ const chinese = {
   'satellite': '卫星',
 }
 
-const single = {
-  'galaxies': 'galaxy',
-  'comets': 'comet',
-  'stars': 'star',
-  'planets': 'planet',
-  'satellites': 'satellite',
-}
-
-
 export default {
   components: {
     itemList,
@@ -116,6 +134,7 @@ export default {
         {id: 2, text: '螺旋星系'},
         {id: 3, text: '不规则星系'},
       ],
+      fatherList: [],
       belonglist: [],
       rules: {
         name: [
@@ -232,12 +251,35 @@ export default {
     let listroute = '';
     const self = this;
     if (paths[1] === 'galaxies') {
-      listroute = '/api/stars?galaxy=' + self.info.id;
+      listroute = '/api/stars?galaxy=' + paths[2];
     } else if (paths[1] === 'stars') {
-      listroute = '/api/planets?star=' + self.info.id;
+      listroute = '/api/planets?star=' + paths[2];
     } else if (paths[1] === 'planets') {
-      listroute = '/api/satellites?planet=' + self.info.id;
+      listroute = '/api/satellites?planet=' + paths[2];
     }
+    const father = {
+      galaxies: '',
+      comets: 'galaxies',
+      planets: 'stars',
+      stars: 'galaxies',
+      satellites: 'planets'
+    }
+
+    // 获取父级天体
+    if (father[paths[1]]) {
+      const furl = `/api/${father[paths[1]]}`;
+      this.$axios.get(furl)
+        .then(function (response) {
+          if (response.data.status !== true) {
+            onfail(self, response, `获取父级天体失败`);
+            return;
+          }
+          self.fatherList = response.data.list;
+        })
+        .catch(error => console.log(error));
+    }
+
+    // 获得该元素
     this.$axios
       .get(getroute)
       .then(function(response) {
@@ -248,13 +290,11 @@ export default {
           }
         } else {
           self.info = response.data.data;
-          self.info.id = paths[2];
-          self.info.category = single[paths[1]];
         }
       })
       .catch(error => console.log(error));
 
-
+      // 获得子元素
       if (listroute) {
         this.$axios
           .get(listroute)
