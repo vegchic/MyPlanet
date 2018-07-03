@@ -27,11 +27,11 @@
 <script>
 const chinese = {
   '所有': 'all',
-  '星系': 'galaxies',
-  '彗星': 'comets',
-  '恒星': 'stars',
-  '行星': 'planets',
-  '卫星': 'satellites',
+  '星系': 'galaxy',
+  '彗星': 'comet',
+  '恒星': 'star',
+  '行星': 'planet',
+  '卫星': 'satellite',
 }
 
 export default {
@@ -54,7 +54,7 @@ export default {
     searchInfo: function () {
       if (this.searchText !== '') {
         this.$router.push({ path: '/search', query: { q: this.searchText, type: chinese[this.basename] } });
-        // this.$emit('search', this.searchText);
+        this.$emit('search', this.searchText);
       }
     },
     jump: function () {

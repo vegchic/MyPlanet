@@ -13,6 +13,9 @@ export default function search() {
             if (query.type && Reflect.has(models, query.type)) {
                 let { type } = query;
                 list = await models[type].search(uid, query.q);
+                list.forEach(val => {
+                    val.category = type;
+                });
             } else {
                 let res = await Promise.all(types.map(val => models[val].search(uid, query.q)));
                 res.forEach((val, index) => {
