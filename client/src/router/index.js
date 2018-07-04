@@ -1,19 +1,21 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import axios from 'axios';
-import menubar from '@/components/menuBar'
-import galaxiesTable from '@/page/galaxiesTable'
-import starsTable from '@/page/starsTable';
-import cometsTable from '@/page/cometsTable';
-import planetsTable from '@/page/planetsTable';
-import satellitesTable from '@/page/satellitesTable';
-import searchTable from '@/page/searchTable';
-import itemDetail from '@/page/itemDetail';
-import newItem from '@/page/newItem';
-import userInfo from '@/page/userInfo';
-import register from '@/page/register';
-import login from '@/page/login';
-import home from '@/page/home';
+
+const menubar = () => import('@/components/menuBar');
+const galaxiesTable = () => import('@/page/galaxiesTable');
+const starsTable = () => import('@/page/starsTable');
+const cometsTable = () => import('@/page/cometsTable');
+const planetsTable = () => import('@/page/planetsTable');
+const satellitesTable = () => import('@/page/satellitesTable');
+const searchTable = () => import('@/page/searchTable');
+const itemDetail = () => import('@/page/itemDetail');
+const newItem = () => import('@/page/newItem');
+const userInfo = () => import('@/page/userInfo');
+const register = () => import('@/page/register');
+const login = () => import('@/page/login');
+const home = () => import('@/page/home');
+
 
 Vue.use(Router);
 
@@ -153,8 +155,8 @@ const router =  new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  axios.get('/api/galaxies').then(response => {
-    if (!response.data.status && response.data.err === '未登录'
+  axios.get('/api/isAuth').then(response => {
+    if (!response.data.status
         && to.path !== '/login' && to.path !== '/register') {
       next('/login');
     } else if (response.data.status && (to.path === '/login' || to.path === '/register')) {

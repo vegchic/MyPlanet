@@ -48,3 +48,7 @@ export async function validateUser(param) {
     }
     return null;
 }
+
+export async function isAuth(ctx) {
+    ctx.body = { status: ctx.isAuthenticated() };
+}
