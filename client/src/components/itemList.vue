@@ -5,7 +5,7 @@
         v-for="(item, index) in slicelist"
         :key="item.id"
         :id="item.id"
-        :to="stardetail(item.category, item.id)">
+        :to="getURL(item.category, item.id)">
           <el-card class="card">
             <img :src="imgUrl(item)" class="image">
             <div style="padding: 14px;">
@@ -65,18 +65,18 @@ export default {
     toChinese(category) {
       return chinese[category];
     },
-    stardetail: function (type, index) {
-      var starurl = '/'
+    getURL: function (type, index) {
+      var url = '/'
       if (type === 'galaxy') {
-        starurl += 'galaxies'
+        url += 'galaxies'
       } else {
-        starurl += type + 's'
+        url += type + 's'
       }
-      return `${starurl}/${index}`
+      return `${url}/${index}`
     },
     removeChild: function (type, id, index) {
       const self = this;
-      let deleteroute = '/api' + this.stardetail(type, id);
+      let deleteroute = '/api' + this.getURL(type, id);
       this.$confirm('此操作将永久删除该天体, 是否继续?', '提示', {
         confirmButtonText: '确定',
           cancelButtonText: '取消',

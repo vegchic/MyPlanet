@@ -201,6 +201,69 @@ export default {
     }
   },
   methods: {
+    getInfo: function(url) {
+      const paths =  url.split('/');
+      let getroute = '/api' + url;
+      let listroute = '';
+      const self = this;
+      if (paths[1] === 'galaxies') {
+        listroute = '/api/stars?galaxy=' + paths[2];
+      } else if (paths[1] === 'stars') {
+        listroute = '/api/planets?star=' + paths[2];
+      } else if (paths[1] === 'planets') {
+        listroute = '/api/satellites?planet=' + paths[2];
+      }
+      const father = {
+        galaxies: '',
+        comets: 'galaxies',
+        planets: 'stars',
+        stars: 'galaxies',
+        satellites: 'planets'
+      }
+
+      // 获取父级天体
+      if (father[paths[1]]) {
+        const furl = `/api/${father[paths[1]]}`;
+        this.$axios.get(furl)
+          .then(function (response) {
+            if (response.data.status !== true) {
+              onfail(self, response, `获取父级天体失败`);
+              return;
+            }
+            self.fatherList = response.data.list;
+          })
+          .catch(error => console.log(error));
+      }
+
+      // 获得该元素
+      this.$axios
+        .get(getroute)
+        .then(function(response) {
+          if (!response.data.status) {
+            onfail(self, response, '获取信息失败');
+            if (response.data.err === '目标天体不存在') {
+              self.$router.push(`/${paths[1]}`);
+            }
+          } else {
+            self.info = response.data.data;
+          }
+        })
+        .catch(error => console.log(error));
+
+      // 获得子元素
+      if (listroute) {
+        this.$axios
+          .get(listroute)
+          .then(function(response) {
+            if (response.data.status !== true) {
+              onfail(self, response, '获取子元素列表失败');
+            } else {
+              self.belonglist = response.data.list;
+            }
+          })
+          .catch(error => console.log(error));
+      }
+    },
     deleteinfo: function() {
       let returnurl = '/' + this.inforoute.split('/')[1];
       let deleteroute = '/api' + this.inforoute;
@@ -243,70 +306,10 @@ export default {
           })
           .catch(error => console.log(error));
       }
-    }
+    },
   },
   mounted: function() {
-    const paths =  this.inforoute.split('/');
-    let getroute = '/api' + this.inforoute;
-    let listroute = '';
-    const self = this;
-    if (paths[1] === 'galaxies') {
-      listroute = '/api/stars?galaxy=' + paths[2];
-    } else if (paths[1] === 'stars') {
-      listroute = '/api/planets?star=' + paths[2];
-    } else if (paths[1] === 'planets') {
-      listroute = '/api/satellites?planet=' + paths[2];
-    }
-    const father = {
-      galaxies: '',
-      comets: 'galaxies',
-      planets: 'stars',
-      stars: 'galaxies',
-      satellites: 'planets'
-    }
-
-    // 获取父级天体
-    if (father[paths[1]]) {
-      const furl = `/api/${father[paths[1]]}`;
-      this.$axios.get(furl)
-        .then(function (response) {
-          if (response.data.status !== true) {
-            onfail(self, response, `获取父级天体失败`);
-            return;
-          }
-          self.fatherList = response.data.list;
-        })
-        .catch(error => console.log(error));
-    }
-
-    // 获得该元素
-    this.$axios
-      .get(getroute)
-      .then(function(response) {
-        if (!response.data.status) {
-          onfail(self, response, '获取信息失败');
-          if (response.data.err === '目标天体不存在') {
-            self.$router.push(`/${paths[1]}`);
-          }
-        } else {
-          self.info = response.data.data;
-        }
-      })
-      .catch(error => console.log(error));
-
-      // 获得子元素
-      if (listroute) {
-        this.$axios
-          .get(listroute)
-          .then(function(response) {
-            if (response.data.status !== true) {
-              onfail(self, response, '获取子元素列表失败');
-            } else {
-              self.belonglist = response.data.list;
-            }
-          })
-          .catch(error => console.log(error));
-      }
+    this.getInfo(this.$route.path);
   }
 };
 </script>

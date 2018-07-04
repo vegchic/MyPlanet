@@ -1,6 +1,6 @@
 <template>
   <div>
-    <searchBar v-on:search="search"></searchBar>
+    <searchBar></searchBar>
     <itemList :list="searchlist" :seen="false"></itemList>
   </div>
 </template>
