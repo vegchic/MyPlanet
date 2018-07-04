@@ -1,7 +1,10 @@
 <template>
   <div>
     <el-row type="flex" justify="center">
-      <el-col :span="2" class="container"><h1>注册</h1></el-col>
+      <h1 class="title">My Planet</h1>
+    </el-row>
+    <el-row type="flex" justify="center">
+      <el-col :span="2" class="container"><h2>Register</h2></el-col>
     </el-row>
     <el-row type="flex" justify="center">
       <el-col :span="4" class="container">
@@ -93,7 +96,11 @@ export default {
 </script>
 
 <style>
-  .container {
-    min-width: 300px !important;
-  }
+.container {
+  min-width: 300px !important;
+}
+
+.title {
+  font-size: 30pt;
+}
 </style>
