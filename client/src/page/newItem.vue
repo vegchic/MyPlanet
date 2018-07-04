@@ -56,32 +56,32 @@
           </el-form-item>
           <el-form-item label="距离（光年）" v-if="iteminfo.category === '行星' || iteminfo.category === '卫星'" prop="distance">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
-              <el-input v-model.number="iteminfo.distance" auto-complete="off"></el-input>
+              <el-input v-model="iteminfo.distance" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="周期（年）" v-if="iteminfo.category === '行星' || iteminfo.category === '彗星' || iteminfo.category === '卫星'" prop="cycle">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
-              <el-input v-model.number="iteminfo.cycle" auto-complete="off"></el-input>
+              <el-input v-model="iteminfo.cycle" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="质量（千吨）" v-if="iteminfo.category !== '星系'" prop="mass">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
-              <el-input v-model.number="iteminfo.mass" auto-complete="off"></el-input>
+              <el-input v-model="iteminfo.mass" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="重力（g）" v-if="iteminfo.category === '行星'" prop="gravity">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
-              <el-input v-model.number="iteminfo.gravity" auto-complete="off"></el-input>
+              <el-input v-model="iteminfo.gravity" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="年龄（亿年）" v-if="iteminfo.category === '恒星' || iteminfo.category === '行星'" prop="age">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
-              <el-input v-model.number="iteminfo.age" auto-complete="off"></el-input>
+              <el-input v-model="iteminfo.age" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="直径（光年）" prop="diameter">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
-              <el-input v-model.number="iteminfo.diameter" auto-complete="off"></el-input>
+              <el-input v-model="iteminfo.diameter" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="特点" v-if="iteminfo.category !== '星系'" prop="feature">
