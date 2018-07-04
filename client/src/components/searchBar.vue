@@ -54,7 +54,7 @@ export default {
     searchInfo: function () {
       if (this.searchText !== '') {
         this.$router.push({ path: '/search', query: { q: this.searchText, type: chinese[this.basename] } });
-        this.$emit('search', this.searchText);
+        this.$emit('search', { q: this.searchText, type: chinese[this.basename] });
       }
     },
     jump: function () {

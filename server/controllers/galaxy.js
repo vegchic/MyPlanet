@@ -89,4 +89,4 @@ class Galaxy extends Controller {
     }
 }
 
-export default () => new Galaxy(genValidator(['name', 'type', 'diameter'], ['image']));
+export default () => new Galaxy(genValidator(['name', 'type', 'diameter'], ['image', 'feature']));
