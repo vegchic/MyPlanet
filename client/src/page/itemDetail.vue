@@ -292,6 +292,7 @@ export default {
       if (valid) {
         let apdateroute = '/api' + this.inforoute;
         const self = this;
+        if (this.info.fname === '（无主）') this.info.fname = '';
         this.$axios
           .put(apdateroute, this.info)
           .then(response => {
