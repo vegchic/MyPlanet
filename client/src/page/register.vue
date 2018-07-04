@@ -16,7 +16,7 @@
               <el-input type="password" v-model="userinfo.password" auto-complete="off"></el-input>
             </el-form-item>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="可选，1到17个字符" placement="right">          
+          <el-tooltip class="item" effect="dark" content="可选，1到17个字符" placement="right">
             <el-form-item label="昵称" prop="nickname">
               <el-input v-model="userinfo.nickname" auto-complete="off"></el-input>
             </el-form-item>
@@ -75,11 +75,11 @@ export default {
         let response = await this.$axios.post('/api/register', this.userinfo);
         if (response.data.status === true) {
           await this.$confirm('注册成功', '提示', {
-            confirmButtonText: '返回注册页面',
+            confirmButtonText: '返回登录页面',
+            cancelButtonText: '取消',
             type: 'info',
             center: true,
-          }).catch(() => {});
-          this.$router.push('/login');
+          }).then(() => this.$router.push('/login')).catch(() => {});
         } else {
           this.$notify.error({
             title: '错误',
