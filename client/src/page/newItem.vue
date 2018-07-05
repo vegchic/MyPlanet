@@ -123,7 +123,7 @@ export default {
     const checkDiameter = genValidator('number', '直径');
     const checkCycle = genValidator('number', '周期');
     const checkGravity = genValidator('number', '重力');
-    const checkFeature = genValidator('name', '特点', true);
+    const checkFeature = genValidator('any', '特点', true);
 
     return {
       alltype: [

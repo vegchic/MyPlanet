@@ -14,7 +14,7 @@
               <el-input v-model="userinfo.username" auto-complete="off"></el-input>
             </el-form-item>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="长度为6-18个任意字符" placement="right">
+          <el-tooltip class="item" effect="dark" content="长度为6-18个字母或数字" placement="right">
             <el-form-item label="密码" prop="password">
               <el-input type="password" v-model="userinfo.password" auto-complete="off"></el-input>
             </el-form-item>

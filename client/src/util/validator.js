@@ -4,7 +4,8 @@ const reg = {
   password: /^(\w){6,20}$/,
   nickname: /^.{1,17}$/,
   name: /^(?!（无主）$)/,
-  number: /^([0-9]*[.])?[0-9]+$/
+  number: /^([0-9]*[.])?[0-9]+$/,
+  any: /^.*$/
 };
 
 export function genValidator(prop, show, optional = false) {
@@ -15,6 +16,8 @@ export function genValidator(prop, show, optional = false) {
       callback(new Error(`请输入${show}`));
     } else if (!reg[prop].test(value)) {
       callback(new Error(`${show}不合法`));
+    } else if (/\s/.test(value)) {
+      callback(new Error('不允许包含空白字符'));
     } else {
       callback();
     }

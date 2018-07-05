@@ -112,7 +112,7 @@ export default {
     const checkDistance = genValidator('number', '距离');
     const checkCycle = genValidator('number', '周期');
     const checkGravity = genValidator('number', '重力');
-    const checkFeature = genValidator('name', '特点', true);
+    const checkFeature = genValidator('any', '特点', true);
     return {
       info: {
         name: '',
