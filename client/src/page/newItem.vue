@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <gallery :type="iteminfo.category" v-on:imgChange="iteminfo.image=`${$event}.png`" :id="initID"></gallery>
+    <gallery :type="iteminfo.category" v-on:imgChange="iteminfo.image=`${$event}.png`" :id="passImg"></gallery>
     <el-row type="flex" justify="center">
       <el-col :span="4">
         <el-form :model="iteminfo" ref="item" :rules="rules">
@@ -218,9 +218,9 @@ export default {
     }
   },
   computed: {
-    initID() {
-      return 0;
-    },
+    passImg() {
+      return parseInt(this.iteminfo.image.split('.')[0]);
+    }
   },
   methods: {
     reset: function () {
