@@ -3,7 +3,7 @@ const reg = {
   username: /^[a-zA-Z]\w{5,17}/,
   password: /^(\w){6,20}$/,
   nickname: /^.{1,17}$/,
-  name: /^.{1,17}$/,
+  name: /^(?!（无主）$)/,
   number: /^([0-9]*[.])?[0-9]+$/
 };
 

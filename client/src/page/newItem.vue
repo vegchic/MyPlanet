@@ -54,7 +54,7 @@
               >{{ item.name }}</el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="距离（光年）" v-if="iteminfo.category === '行星' || iteminfo.category === '卫星'" prop="distance">
+          <el-form-item label="距离（光年）" v-if="distanceSeen" prop="distance">
             <el-tooltip class="item" effect="dark" content="请输入小数，整数" placement="right">
               <el-input v-model="iteminfo.distance" auto-complete="off"></el-input>
             </el-tooltip>
@@ -220,7 +220,11 @@ export default {
   computed: {
     passImg() {
       return parseInt(this.iteminfo.image.split('.')[0]);
-    }
+    },
+    distanceSeen() {
+      return this.iteminfo.fname !== '（无主）' &&
+            (this.iteminfo.category === '行星' || this.iteminfo.category === '卫星');
+    },
   },
   methods: {
     reset: function () {
