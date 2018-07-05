@@ -36,12 +36,12 @@
         </el-form>
         <el-form :model="passwords" v-if="changePassword" :rules="rules2" ref="pwd">
           <el-form-item label="旧密码" prop="oldpassword">
-            <el-tooltip class="item" effect="dark" content="长度为6-18个任意字符" placement="right">
+            <el-tooltip class="item" effect="dark" content="长度为6-18个字母或数字" placement="right">
               <el-input type="password" v-model="passwords.oldpassword" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
           <el-form-item label="新密码" prop="newpassword">
-            <el-tooltip class="item" effect="dark" content="长度为6-18个任意字符" placement="right">
+            <el-tooltip class="item" effect="dark" content="长度为6-18个字母或数字" placement="right">
               <el-input type="password" v-model="passwords.newpassword" auto-complete="off"></el-input>
             </el-tooltip>
           </el-form-item>
