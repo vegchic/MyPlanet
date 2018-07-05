@@ -229,6 +229,7 @@ export default {
     add: async function () {
       let valid = await this.$refs['item'].validate().catch(() => {});
       if (valid) {
+        if (this.iteminfo.fname === '（无主）') this.iteminfo.fname = '';
         const url = `/api/${chinese[this.iteminfo.category]}`;
         let response = await this.$axios.post(url, this.iteminfo);
         if (!response.data.status) {

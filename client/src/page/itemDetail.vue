@@ -47,8 +47,7 @@
               >{{ item.name }}</el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="距离(光年)"
-            prop="distance" v-if="info.category === 'planet' ||  info.category === 'satellite'">
+          <el-form-item label="距离(光年)" prop="distance" v-if="distanceSeen">
             <el-input v-model="info.distance" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="周期(年)"
@@ -196,6 +195,10 @@ export default {
       }
       return false;
     },
+    distanceSeen() {
+      return this.info.fname !== '（无主）' &&
+            (this.info.category === 'planet' || this.info.category === 'satellite');
+    },
     inforoute: function() {
       return this.$route.path;
     }
@@ -245,6 +248,7 @@ export default {
               self.$router.push(`/${paths[1]}`);
             }
           } else {
+            if (!response.data.data.fname) response.data.data.fname = '（无主）';
             self.info = response.data.data;
           }
         })
@@ -292,9 +296,10 @@ export default {
       if (valid) {
         let apdateroute = '/api' + this.inforoute;
         const self = this;
-        if (this.info.fname === '（无主）') this.info.fname = '';
+        let info = { ...this.info };
+        if (info.fname === '（无主）') info.fname = '';
         this.$axios
-          .put(apdateroute, this.info)
+          .put(apdateroute, info)
           .then(response => {
             if (!response.data.status) {
               onfail(self, response, '更新失败');
