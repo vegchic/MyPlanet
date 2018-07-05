@@ -7,7 +7,7 @@ const reg = {
 };
 
 export function match(val, opt) {
-    return Reflect.has(reg, opt) && reg[opt].test(val);
+    return Reflect.has(reg, opt) && reg[opt].test(val) && !/\s/.test(val);
 }
 
 export function genValidator(needed, optional) {
