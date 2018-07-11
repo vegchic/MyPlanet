@@ -63,3 +63,7 @@ typings/
 .vscode
 
 config.js
+
+public/images/avatars/*
+
+!public/images/avatars/default.jpg
